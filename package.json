@@ -1,6 +1,6 @@
 {
   "name": "pondus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub organization metrics and settings CLI - commit stats, members, teams, webhooks, actions",
   "type": "module",
   "bin": {
