@@ -66,9 +66,9 @@ export default function Home() {
 								<span className="flex-1 text-center text-xs text-[var(--muted)]">Specto</span>
 							</div>
 							{/* App content mockup */}
-							<div className="flex h-[420px]">
-								{/* Sidebar */}
-								<div className="w-48 border-r border-[var(--border)] bg-[var(--card)] flex flex-col rounded-tr-xl">
+							<div className="flex h-[320px] sm:h-[380px] md:h-[420px]">
+								{/* Sidebar - hidden on mobile */}
+								<div className="hidden md:flex w-48 border-r border-[var(--border)] bg-[var(--card)] flex-col rounded-tr-xl">
 									<nav className="p-2 pt-3">
 										<div className="flex items-center gap-2 px-3 py-2 rounded-md bg-[var(--accent)] text-white text-sm">
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,18 +80,20 @@ export default function Home() {
 									<div className="px-2 mt-1 flex-1">
 										<p className="px-3 py-1.5 text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider">Recents</p>
 										<div className="space-y-0.5">
-											{['vercel', 'facebook', 'microsoft'].map((org) => (
-												<div key={org} className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-[var(--muted)]">
-													<div className="w-4 h-4 rounded bg-[var(--border)] flex items-center justify-center text-[10px]">
-														{org.charAt(0).toUpperCase()}
-													</div>
-													<span className="truncate">{org}</span>
+											{[
+												{ name: 'vercel', avatar: 'https://avatars.githubusercontent.com/u/14985020?s=32' },
+												{ name: 'facebook', avatar: 'https://avatars.githubusercontent.com/u/69631?s=32' },
+												{ name: 'microsoft', avatar: 'https://avatars.githubusercontent.com/u/6154722?s=32' },
+											].map((org) => (
+												<div key={org.name} className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-[var(--muted)] hover:bg-[var(--card-hover)] transition-colors cursor-pointer">
+													<img src={org.avatar} alt="" className="w-4 h-4 rounded" />
+													<span className="truncate">{org.name}</span>
 												</div>
 											))}
 										</div>
 									</div>
 									<div className="p-2 border-t border-[var(--border)]">
-										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)]">
+										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)] hover:bg-[var(--card-hover)] transition-colors cursor-pointer">
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -104,56 +106,62 @@ export default function Home() {
 											<div className="w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-xs font-medium">
 												D
 											</div>
-											<span className="text-xs font-medium">darkroom</span>
+											<p className="text-xs font-medium truncate">darkroom</p>
 										</div>
 									</div>
 								</div>
 								{/* Main content */}
-								<div className="flex-1 p-6 overflow-hidden relative">
-									<div className="mb-6">
-										<h2 className="text-lg font-semibold">Welcome back, <span className="text-[var(--accent)]">darkroom</span></h2>
-										<p className="text-sm text-[var(--muted)]">Your GitHub activity at a glance</p>
+								<div className="flex-1 p-4 sm:p-6 overflow-hidden relative">
+									<div className="mb-4 sm:mb-6">
+										<h2 className="text-lg sm:text-xl font-semibold">Welcome back, <span className="text-[var(--accent)]">darkroom</span></h2>
+										<p className="text-xs sm:text-sm text-[var(--muted)] mt-1">Your GitHub activity at a glance</p>
 									</div>
-									<div className="grid grid-cols-4 gap-4 mb-6">
+									<div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
 										{[
 											{ label: 'Repositories', value: '47', desc: 'Public repos' },
 											{ label: 'Total Stars', value: '2.3k', desc: 'Across all repos' },
 											{ label: 'Commits', value: '892', desc: 'Last 30 days' },
 											{ label: 'Pull Requests', value: '156', desc: 'Last 30 days' },
 										].map((stat) => (
-											<div key={stat.label} className="p-4 rounded-lg border border-[var(--border)] bg-[var(--background)]">
-												<p className="text-2xl font-bold text-[var(--accent)]">{stat.value}</p>
-												<p className="text-xs font-medium">{stat.label}</p>
-												<p className="text-[10px] text-[var(--muted)]">{stat.desc}</p>
+											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--background)]">
+												<p className="text-xl sm:text-2xl font-bold text-[var(--accent)]">{stat.value}</p>
+												<p className="text-[10px] sm:text-xs font-medium">{stat.label}</p>
+												<p className="text-[9px] sm:text-[10px] text-[var(--muted)] hidden sm:block">{stat.desc}</p>
 											</div>
 										))}
 									</div>
-									<div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-4">
-										<p className="text-sm font-medium text-[var(--muted)] mb-3">Your Organizations</p>
-										<div className="flex gap-3">
-											{[
-												{ name: 'vercel', letter: 'V' },
-												{ name: 'facebook', letter: 'F' },
-												{ name: 'microsoft', letter: 'M' },
-												{ name: 'google', letter: 'G' },
-											].map((org) => (
-												<div key={org.name} className="flex flex-col items-center gap-2 p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] transition-colors cursor-pointer group">
-													<div className="w-10 h-10 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-center text-sm font-medium group-hover:scale-105 transition-transform">
-														{org.letter}
+									<div className="rounded-lg border border-[var(--border)] bg-[var(--card)]">
+										<div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-[var(--border)]">
+											<p className="text-xs sm:text-sm font-medium text-[var(--muted)]">Your Organizations</p>
+										</div>
+										<div className="p-3 sm:p-4">
+											<div className="grid grid-cols-4 gap-2 sm:gap-3">
+												{[
+													{ name: 'vercel', avatar: 'https://avatars.githubusercontent.com/u/14985020?s=64' },
+													{ name: 'facebook', avatar: 'https://avatars.githubusercontent.com/u/69631?s=64' },
+													{ name: 'microsoft', avatar: 'https://avatars.githubusercontent.com/u/6154722?s=64' },
+													{ name: 'google', avatar: 'https://avatars.githubusercontent.com/u/1342004?s=64' },
+												].map((org) => (
+													<div key={org.name} className="flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 rounded-lg bg-[var(--background)] border border-[var(--border)] hover:border-[var(--accent)] transition-all cursor-pointer group">
+														<img
+															src={org.avatar}
+															alt={org.name}
+															className="w-6 h-6 sm:w-10 sm:h-10 rounded-lg group-hover:scale-105 transition-transform"
+														/>
+														<span className="text-[9px] sm:text-xs font-medium truncate w-full text-center">{org.name}</span>
 													</div>
-													<span className="text-[10px] text-[var(--muted)]">{org.name}</span>
-												</div>
-											))}
+												))}
+											</div>
 										</div>
 									</div>
 									{/* Floating search bar */}
-									<div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-64">
-										<div className="flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border)] bg-[var(--card)] shadow-lg">
-											<svg className="w-4 h-4 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:w-72">
+										<div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full border border-[var(--border)] bg-[var(--card)] shadow-lg hover:border-[var(--muted)] transition-colors">
+											<svg className="w-3 h-3 sm:w-4 sm:h-4 text-[var(--muted)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 											</svg>
-											<span className="text-sm text-[var(--muted)]">Search organization...</span>
-											<kbd className="ml-auto px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)] bg-[var(--background)] rounded border border-[var(--border)]">
+											<span className="flex-1 text-xs sm:text-sm text-[var(--muted)]">Search organization...</span>
+											<kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-[10px] font-medium text-[var(--muted)] bg-[var(--background)] rounded border border-[var(--border)]">
 												<span className="text-xs">⌘</span>K
 											</kbd>
 										</div>
