@@ -33,11 +33,8 @@ const downloads = [
 ]
 
 export default function DownloadsPage() {
-	// Try local download first, fall back to GitHub releases
-	const getDownloadUrl = (file: string, available: boolean) => {
-		if (available) {
-			return `/downloads/${file}`
-		}
+	// All downloads from GitHub releases
+	const getDownloadUrl = (file: string) => {
 		return `https://github.com/darkroomengineering/specto/releases/download/v${currentVersion}/${file}`
 	}
 
@@ -93,7 +90,7 @@ export default function DownloadsPage() {
 									{platform.variants.map((variant) => (
 										<a
 											key={variant.file}
-											href={getDownloadUrl(variant.file, variant.available)}
+											href={getDownloadUrl(variant.file)}
 											className={`flex items-center justify-between p-3 rounded-lg border bg-[var(--background)] transition-colors group ${
 												variant.available
 													? 'border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--card)]'
@@ -150,10 +147,10 @@ export default function DownloadsPage() {
 
 							<div className="space-y-2">
 								<code className="block px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm font-mono">
-									npm install -g @specto/cli
+									npm install -g specto-cli
 								</code>
 								<code className="block px-4 py-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm font-mono">
-									bun add -g @specto/cli
+									bun add -g specto-cli
 								</code>
 							</div>
 

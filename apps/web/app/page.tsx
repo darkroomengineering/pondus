@@ -67,7 +67,7 @@ export default function Home() {
 							</Link>
 						</div>
 						<p className="text-xs text-[var(--muted)]">
-							Also available as <code className="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)]">npm i -g @specto/cli</code>
+							Also available as <code className="px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)]">npm i -g specto-cli</code>
 						</p>
 					</div>
 
@@ -371,7 +371,7 @@ export default function Home() {
 						</Link>
 					</div>
 					<code className="inline-block px-4 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm">
-						npm install -g @specto/cli
+						npm install -g specto-cli
 					</code>
 				</div>
 			</section>

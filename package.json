@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev --filter=!@specto/cli",
+    "dev": "turbo dev --filter=!./apps/cli",
     "build": "turbo build",
     "test": "turbo test",
     "typecheck": "turbo typecheck",
