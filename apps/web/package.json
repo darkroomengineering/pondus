@@ -1,0 +1,27 @@
+{
+  "name": "@pondus/web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pondus website - marketing and documentation",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@pondus/ui": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.18",
+    "next": "^16.1.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.8",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/v2/crates/tauri/schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for Pondus",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "gh-auth-token",
+          "cmd": "gh",
+          "args": ["auth", "token"],
+          "sidecar": false
+        }
+      ]
+    }
+  ]
+}

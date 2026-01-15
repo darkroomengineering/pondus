@@ -1,4 +1,42 @@
-node_modules
-dist
-*.log
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.next/
+.turbo/
+
+# Tauri
+apps/desktop/src-tauri/target/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+.cache/
+*.tsbuildinfo
+
+# Test
+coverage/
+
+# TLDR index
+.tldr/
+
+# Bun
+bun.lock

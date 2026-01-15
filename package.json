@@ -1,46 +1,27 @@
 {
   "name": "pondus",
   "version": "1.0.1",
-  "description": "GitHub organization metrics and settings CLI - commit stats, members, teams, webhooks, actions",
-  "type": "module",
-  "bin": {
-    "pondus": "dist/index.js"
-  },
+  "private": true,
+  "description": "GitHub organization metrics - CLI, desktop app, and web dashboard",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target node --minify",
-    "test": "bun test",
-    "test:watch": "bun test --watch",
-    "typecheck": "tsc --noEmit",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "prepublishOnly": "bun run test && bun run typecheck && bun run build"
-  },
-  "dependencies": {
-    "@clack/prompts": "^0.11.0",
-    "commander": "^14.0.2",
-    "ora": "^9.0.0",
-    "picocolors": "^1.1.1"
+    "dev": "turbo dev --filter=!@pondus/cli",
+    "build": "turbo build",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
-    "@types/bun": "^1.3.6",
-    "@types/node": "^25.0.8",
+    "turbo": "^2.7.4",
     "typescript": "^5.9.3"
   },
-  "keywords": [
-    "github",
-    "organization",
-    "metrics",
-    "cli",
-    "stats",
-    "commits",
-    "members",
-    "teams",
-    "actions",
-    "webhooks",
-    "gh"
-  ],
+  "packageManager": "bun@1.2.18",
   "author": "Darkroom Engineering <hi@darkroom.engineering> (https://darkroom.engineering)",
   "license": "MIT",
   "repository": {
@@ -50,11 +31,5 @@
   "bugs": {
     "url": "https://github.com/darkroomengineering/pondus/issues"
   },
-  "homepage": "https://github.com/darkroomengineering/pondus#readme",
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "files": [
-    "dist"
-  ]
+  "homepage": "https://github.com/darkroomengineering/pondus#readme"
 }

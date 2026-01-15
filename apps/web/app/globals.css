@@ -1,0 +1,22 @@
+/**
+ * Pondus Web - Global Styles
+ * Imports Tailwind and shared design tokens
+ */
+
+@import "tailwindcss";
+@import "@pondus/ui/styles";
+
+/* Web-specific styles */
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
