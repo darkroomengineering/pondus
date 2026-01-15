@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+import { LenisProvider } from './lenis'
 import './globals.css'
 
 export const metadata: Metadata = {
-	title: 'Pondus - GitHub Organization Metrics',
+	title: 'Specto - GitHub Organization Metrics',
 	description: 'Track commits, members, teams, and more across your GitHub organizations.',
 }
 
@@ -13,7 +14,9 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en" data-theme="dark">
-			<body>{children}</body>
+			<body>
+				<LenisProvider>{children}</LenisProvider>
+			</body>
 		</html>
 	)
 }

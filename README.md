@@ -1,4 +1,4 @@
-# Pondus
+# Specto
 
 GitHub organization metrics dashboard by [Darkroom Engineering](https://darkroom.engineering).
 
@@ -14,8 +14,8 @@ GitHub organization metrics dashboard by [Darkroom Engineering](https://darkroom
 
 | Package | Description |
 |---------|-------------|
-| `@pondus/core` | Shared types and GitHub client |
-| `@pondus/ui` | Darkroom-themed React components |
+| `@specto/core` | Shared types and GitHub client |
+| `@specto/ui` | Darkroom-themed React components |
 
 ## Getting Started
 

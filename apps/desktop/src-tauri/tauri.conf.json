@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Pondus",
-  "version": "1.0.0",
-  "identifier": "engineering.darkroom.pondus",
+  "productName": "Specto",
+  "version": "1.1.0",
+  "identifier": "engineering.darkroom.specto",
   "build": {
     "beforeDevCommand": "bun run dev:vite",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Pondus",
+        "title": "Specto",
         "width": 1200,
         "height": 800,
         "minWidth": 800,

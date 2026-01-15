@@ -1,10 +1,10 @@
 /**
- * Pondus UI - Design Tokens
+ * Specto UI - Design Tokens
  * Darkroom themed design system
  *
  * Note: Apps should import Tailwind first, then import this file:
  * @import "tailwindcss";
- * @import "@pondus/ui/styles";
+ * @import "@specto/ui/styles";
  */
 
 /* Base design tokens */

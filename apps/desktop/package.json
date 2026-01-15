@@ -1,8 +1,8 @@
 {
-  "name": "@pondus/desktop",
+  "name": "@specto/desktop",
   "version": "1.0.0",
   "private": true,
-  "description": "Pondus Desktop - GitHub organization metrics dashboard",
+  "description": "Specto Desktop - GitHub organization metrics dashboard",
   "type": "module",
   "scripts": {
     "dev": "tauri dev",
@@ -15,8 +15,8 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
-    "@pondus/core": "workspace:*",
-    "@pondus/ui": "workspace:*",
+    "@specto/core": "workspace:*",
+    "@specto/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-shell": "^2.3.4",
@@ -30,7 +30,9 @@
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
+    "png-to-ico": "^3.0.1",
     "postcss": "^8.5.6",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.18",
     "vite": "^7.3.1"
   }

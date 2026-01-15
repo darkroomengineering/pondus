@@ -1,5 +1,5 @@
 {
-  "name": "pondus",
+  "name": "specto",
   "version": "1.0.1",
   "private": true,
   "description": "GitHub organization metrics - CLI, desktop app, and web dashboard",
@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev --filter=!@pondus/cli",
+    "dev": "turbo dev --filter=!@specto/cli",
     "build": "turbo build",
     "test": "turbo test",
     "typecheck": "turbo typecheck",
@@ -26,10 +26,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/darkroomengineering/pondus.git"
+    "url": "git+https://github.com/darkroomengineering/specto.git"
   },
   "bugs": {
-    "url": "https://github.com/darkroomengineering/pondus/issues"
+    "url": "https://github.com/darkroomengineering/specto/issues"
   },
-  "homepage": "https://github.com/darkroomengineering/pondus#readme"
+  "homepage": "https://github.com/darkroomengineering/specto#readme"
 }

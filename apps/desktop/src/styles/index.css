@@ -1,10 +1,10 @@
 /**
- * Pondus Desktop - Styles
+ * Specto Desktop - Styles
  * Imports Tailwind and shared design tokens
  */
 
 @import "tailwindcss";
-@import "@pondus/ui/styles";
+@import "@specto/ui/styles";
 
 /* Desktop-specific styles */
 

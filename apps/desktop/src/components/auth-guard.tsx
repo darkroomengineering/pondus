@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { useAuthStore } from '../stores/auth'
-import { Button, Card } from '@pondus/ui'
+import { Button, Card } from '@specto/ui'
 import { Loading } from './spinner'
 import { open } from '@tauri-apps/plugin-shell'
 
@@ -31,7 +31,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
 						<div className="text-5xl mb-4">🔐</div>
 						<h2 className="text-xl font-semibold mb-2">GitHub Authentication Required</h2>
 						<p className="text-sm text-[var(--muted)] mb-6">
-							Pondus uses the GitHub CLI for secure authentication.
+							Specto uses the GitHub CLI for secure authentication.
 							{error && (
 								<span className="block mt-2 text-[var(--color-error)]">{error}</span>
 							)}

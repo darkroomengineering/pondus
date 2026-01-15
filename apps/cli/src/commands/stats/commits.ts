@@ -7,7 +7,7 @@ import {
 	type CommitStats,
 	type OutputFormat,
 	type Repository,
-} from '@pondus/core'
+} from '@specto/core'
 import { createProgressSpinner, withSpinner } from '../../lib/ui/spinner'
 import { printTable } from '../../lib/ui/table'
 

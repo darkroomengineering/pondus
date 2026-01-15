@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { getDefaultDateRange, type OutputFormat } from '@pondus/core'
+import { getDefaultDateRange, type OutputFormat } from '@specto/core'
 import { runCommitStats } from './commits'
 import { wrapCommand } from '../../lib/utils/errors'
 

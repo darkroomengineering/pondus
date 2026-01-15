@@ -3,7 +3,7 @@ import { cn } from '../../utils/cn'
 
 export interface StatProps extends HTMLAttributes<HTMLDivElement> {
 	label: string
-	value: string | number
+	value: string | number | ReactNode
 	description?: string
 	trend?: {
 		value: number

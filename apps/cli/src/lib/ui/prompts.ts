@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
-import { getUserOrgs, getDefaultDateRange, type OutputFormat } from '@pondus/core'
+import { getUserOrgs, getDefaultDateRange, type OutputFormat } from '@specto/core'
 
 export async function selectOrganization(defaultOrg?: string): Promise<string> {
 	// If default provided and user confirms, use it

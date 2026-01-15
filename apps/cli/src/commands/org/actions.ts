@@ -1,5 +1,5 @@
 import pc from 'picocolors'
-import { getActionsSettings, getOrgRunners, getOrgSecrets, type OutputFormat } from '@pondus/core'
+import { getActionsSettings, getOrgRunners, getOrgSecrets, type OutputFormat } from '@specto/core'
 import { withSpinner } from '../../lib/ui/spinner'
 import { printTable, printKeyValue, printSection, printWarning } from '../../lib/ui/table'
 

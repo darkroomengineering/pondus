@@ -9,7 +9,7 @@ import { runInteractive } from './interactive'
 const program = new Command()
 
 program
-	.name('pondus')
+	.name('specto')
 	.description('GitHub organization metrics and settings CLI')
 	.version('1.0.0')
 	.addHelpText(
@@ -17,28 +17,28 @@ program
 		`
 ${pc.bold('Examples:')}
   ${pc.dim('# Show commit statistics for an organization')}
-  $ pondus stats commits myorg
+  $ specto stats commits myorg
 
   ${pc.dim('# Show commits for a specific date range')}
-  $ pondus stats commits myorg --since 2025-01-01 --until 2025-06-30
+  $ specto stats commits myorg --since 2025-01-01 --until 2025-06-30
 
   ${pc.dim('# Show organization info')}
-  $ pondus org info myorg
+  $ specto org info myorg
 
   ${pc.dim('# List organization members')}
-  $ pondus org members myorg
+  $ specto org members myorg
 
   ${pc.dim('# List organization teams')}
-  $ pondus org teams myorg
+  $ specto org teams myorg
 
   ${pc.dim('# Show Actions settings with runners and secrets')}
-  $ pondus org actions myorg --runners --secrets
+  $ specto org actions myorg --runners --secrets
 
   ${pc.dim('# Check authentication status')}
-  $ pondus config auth
+  $ specto config auth
 
   ${pc.dim('# Run in interactive mode')}
-  $ pondus
+  $ specto
 `
 	)
 

@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import pc from 'picocolors'
-import { getAuthStatus, isGhCliAvailable } from '@pondus/core'
+import { getAuthStatus, isGhCliAvailable } from '@specto/core'
 import { printKeyValue, printSuccess, printWarning, printError } from '../../lib/ui/table'
 import { wrapCommand } from '../../lib/utils/errors'
 

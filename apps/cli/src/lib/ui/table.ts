@@ -1,5 +1,5 @@
 import pc from 'picocolors'
-import type { OutputFormat } from '@pondus/core'
+import type { OutputFormat } from '@specto/core'
 
 interface TableColumn<T> {
 	key: keyof T | ((row: T) => string | number)

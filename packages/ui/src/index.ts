@@ -10,3 +10,4 @@ export { Card, type CardProps, type CardHeaderProps, type CardContentProps, type
 export { Stat, type StatProps } from './components/stat'
 export { Badge, type BadgeProps } from './components/badge'
 export { Table, type TableProps } from './components/table'
+export { Select, type SelectProps, type SelectOption } from './components/select'

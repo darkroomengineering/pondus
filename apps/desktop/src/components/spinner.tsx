@@ -1,4 +1,4 @@
-import { cn } from '@pondus/ui'
+import { cn } from '@specto/ui'
 
 interface SpinnerProps {
 	size?: 'sm' | 'md' | 'lg'

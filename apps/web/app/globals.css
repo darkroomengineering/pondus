@@ -1,10 +1,11 @@
 /**
- * Pondus Web - Global Styles
+ * Specto Web - Global Styles
  * Imports Tailwind and shared design tokens
  */
 
 @import "tailwindcss";
-@import "@pondus/ui/styles";
+@import "@specto/ui/styles";
+@import "lenis/dist/lenis.css";
 
 /* Web-specific styles */
 

@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import type { OutputFormat } from '@pondus/core'
+import type { OutputFormat } from '@specto/core'
 import { runOrgInfo } from './info'
 import { runOrgMembers } from './members'
 import { runOrgTeams } from './teams'

@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
-import { getAuthStatus, type OutputFormat } from '@pondus/core'
+import { getAuthStatus, type OutputFormat } from '@specto/core'
 import { selectOrganization, selectDateRange, selectOutputFormat } from './lib/ui/prompts'
 import { runCommitStats } from './commands/stats/commits'
 import { runOrgInfo } from './commands/org/info'
@@ -16,13 +16,13 @@ type OrgAction = 'info' | 'members' | 'teams' | 'webhooks' | 'actions'
 
 export async function runInteractive(): Promise<void> {
 	try {
-		p.intro(pc.bgCyan(pc.black(' pondus ')))
+		p.intro(pc.bgCyan(pc.black(' specto ')))
 
 		// Check auth first
 		const authStatus = await getAuthStatus()
 		if (!authStatus.valid) {
 			p.note(
-				`Not authenticated. Run ${pc.cyan('pondus config auth')} for details.\n` +
+				`Not authenticated. Run ${pc.cyan('specto config auth')} for details.\n` +
 					`Or authenticate with ${pc.cyan('gh auth login')}`,
 				'Authentication'
 			)

@@ -1,7 +1,7 @@
 {
-  "name": "@pondus/ui",
+  "name": "@specto/ui",
   "version": "1.0.0",
-  "description": "Shared UI components for Pondus - Darkroom themed",
+  "description": "Shared UI components for Specto - Darkroom themed",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

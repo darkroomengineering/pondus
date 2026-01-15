@@ -1,10 +1,10 @@
 {
-  "name": "@pondus/cli",
+  "name": "@specto/cli",
   "version": "1.0.1",
   "description": "GitHub organization metrics CLI",
   "type": "module",
   "bin": {
-    "pondus": "dist/index.js"
+    "specto": "dist/index.js"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
@@ -18,14 +18,15 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@pondus/core": "workspace:*",
+    "@specto/core": "workspace:*",
     "commander": "^14.0.2",
     "ora": "^9.0.0",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@types/bun": "^1.3.6",
-    "@types/node": "^25.0.8"
+    "@types/node": "^25.0.8",
+    "bun-types": "^1.3.6"
   },
   "keywords": [
     "github",
