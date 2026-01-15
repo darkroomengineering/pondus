@@ -1,0 +1,58 @@
+{
+  "name": "pondus",
+  "version": "1.0.0",
+  "description": "GitHub organization metrics and settings CLI - commit stats, members, teams, webhooks, actions",
+  "type": "module",
+  "bin": {
+    "pondus": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node --minify",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "prepublishOnly": "bun run typecheck && bun run build"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "commander": "^14.0.0",
+    "ora": "^9.0.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "github",
+    "organization",
+    "metrics",
+    "cli",
+    "stats",
+    "commits",
+    "members",
+    "teams",
+    "actions",
+    "webhooks",
+    "gh"
+  ],
+  "author": "Darkroom Engineering <hi@darkroom.engineering> (https://darkroom.engineering)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darkroomengineering/pondus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/darkroomengineering/pondus/issues"
+  },
+  "homepage": "https://github.com/darkroomengineering/pondus#readme",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
