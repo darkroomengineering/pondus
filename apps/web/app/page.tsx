@@ -4,16 +4,31 @@ import { getLeaderboardData, fallbackLeaderboardData } from '@/lib/github'
 
 // Format number for display
 function formatNumber(num: number): string {
+	if (num >= 1000000) {
+		return (num / 1000000).toFixed(1) + 'M'
+	}
 	if (num >= 1000) {
 		return (num / 1000).toFixed(1) + 'k'
 	}
 	return num.toString()
 }
 
-// Calculate a score based on activity
-function calculateScore(commits: number, prs: number, contributors: number): number {
-	const score = (commits * 0.5 + prs * 2 + contributors * 10) / 100
-	return Math.min(99.9, Math.max(50, score))
+// Calculate a relative score (normalized to 60-99 range based on max values)
+function calculateRelativeScore(
+	commits: number,
+	prs: number,
+	stars: number,
+	maxCommits: number,
+	maxPrs: number,
+	maxStars: number
+): number {
+	// Weighted normalized score
+	const commitScore = (commits / maxCommits) * 40
+	const prScore = (prs / maxPrs) * 30
+	const starScore = (stars / maxStars) * 30
+	const rawScore = commitScore + prScore + starScore
+	// Scale to 60-99 range
+	return Math.round(60 + rawScore * 0.39)
 }
 
 // Rank badge component
@@ -66,14 +81,21 @@ export default async function Home() {
 		// Use fallback data on error
 	}
 
+	// Calculate max values for relative scoring
+	const maxCommits = Math.max(...leaderboardData.map(o => o.commits))
+	const maxPrs = Math.max(...leaderboardData.map(o => o.prs))
+	const maxStars = Math.max(...leaderboardData.map(o => o.stars))
+
 	// Prepare hero data (top 3)
 	const heroOrgs = leaderboardData.slice(0, 3).map((org, index) => ({
 		rank: index + 1,
 		name: org.name,
 		avatarUrl: org.avatarUrl,
-		score: calculateScore(org.commits, org.prs, org.contributors).toFixed(1),
+		score: calculateRelativeScore(org.commits, org.prs, org.stars, maxCommits, maxPrs, maxStars),
 		commits: formatNumber(org.commits),
-		trend: ['+12%', '+8%', '+15%'][index] || '+5%',
+		prs: formatNumber(org.prs),
+		stars: formatNumber(org.stars),
+		repos: org.repos,
 	}))
 
 	return (
@@ -158,11 +180,15 @@ export default async function Home() {
 										/>
 										<div className="flex-1 min-w-0">
 											<p className="font-semibold text-sm sm:text-base truncate">{org.name}</p>
-											<p className="text-xs text-[var(--muted)]">{org.commits} commits</p>
+											<div className="flex items-center gap-3 text-xs text-[var(--muted)]">
+												<span>{org.commits} commits</span>
+												<span className="hidden sm:inline">·</span>
+												<span className="hidden sm:inline">{org.stars} stars</span>
+											</div>
 										</div>
 										<div className="text-right">
 											<p className="text-lg sm:text-xl font-bold text-[var(--accent)]">{org.score}</p>
-											<p className="text-xs text-emerald-500 font-medium">{org.trend}</p>
+											<p className="text-xs text-[var(--muted)]">{org.prs} PRs</p>
 										</div>
 									</div>
 								))}
