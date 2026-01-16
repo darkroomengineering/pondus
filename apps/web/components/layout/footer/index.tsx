@@ -9,11 +9,8 @@ const footerLinks = {
 		{ href: '/#pricing', label: 'Pricing' },
 	],
 	resources: [
-		{ href: 'https://github.com/darkroomengineering/specto', label: 'GitHub', external: true },
-		{ href: 'https://github.com/darkroomengineering/specto#readme', label: 'Documentation', external: true },
-	],
-	company: [
-		{ href: 'https://darkroom.engineering', label: 'Darkroom', external: true },
+		{ href: 'https://github.com/specto-dev/specto', label: 'GitHub', external: true },
+		{ href: 'https://github.com/specto-dev/specto#readme', label: 'Documentation', external: true },
 	],
 }
 
@@ -57,27 +54,11 @@ export function Footer() {
 								))}
 							</ul>
 						</div>
-						<div className={s.linkGroup}>
-							<h4 className={s.linkTitle}>Company</h4>
-							<ul className={s.linkList}>
-								{footerLinks.company.map((link) => (
-									<li key={link.href}>
-										<Link
-											href={link.href}
-											className={s.link}
-											{...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-										>
-											{link.label}
-										</Link>
-									</li>
-								))}
-							</ul>
-						</div>
 					</div>
 				</div>
 				<div className={s.bottom}>
 					<span className={s.copyright}>
-						© {new Date().getFullYear()} <span className={s.accent}>Darkroom Engineering</span>. All rights reserved.
+						© {new Date().getFullYear()} <span className={s.accent}>Specto</span>. All rights reserved.
 					</span>
 					<span className={s.license}>MIT License (CLI)</span>
 				</div>

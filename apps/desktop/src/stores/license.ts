@@ -16,7 +16,7 @@ interface LicenseState {
 
 // Server-side validation endpoint (cannot be bypassed)
 const API_BASE = import.meta.env.PROD
-	? 'https://specto.darkroom.engineering'
+	? 'https://specto.dev'
 	: 'http://localhost:3000'
 
 // Dev mode bypass requires a special env var (not just running in dev)

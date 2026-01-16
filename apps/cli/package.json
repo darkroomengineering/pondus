@@ -6,14 +6,6 @@
   "bin": {
     "specto": "dist/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/darkroomengineering/specto.git"
-  },
-  "homepage": "https://specto.darkroom.engineering",
-  "bugs": {
-    "url": "https://github.com/darkroomengineering/specto/issues"
-  },
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node --minify",
@@ -41,9 +33,9 @@
     "organization",
     "metrics",
     "cli",
-    "darkroom"
+    "specto"
   ],
-  "author": "Darkroom Engineering <hi@darkroom.engineering>",
+  "author": "Specto",
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"

@@ -21,7 +21,7 @@ const sizeStyles = {
 }
 
 /**
- * Button component with Darkroom styling
+ * Button component
  *
  * @example
  * ```tsx

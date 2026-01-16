@@ -1,7 +1,7 @@
 {
   "name": "@specto/ui",
   "version": "1.0.0",
-  "description": "Shared UI components for Specto - Darkroom themed",
+  "description": "Shared UI components for Specto",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,6 +33,6 @@
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3"
   },
-  "author": "Darkroom Engineering <hi@darkroom.engineering>",
+  "author": "Specto",
   "license": "MIT"
 }

@@ -210,16 +210,7 @@ export function Settings() {
 										{isPro ? 'Pro' : 'Free'}
 									</span>
 								</div>
-								<div className="flex justify-between">
-									<span className="text-[var(--muted)]">Built by</span>
-									<button
-										onClick={() => open('https://darkroom.engineering')}
-										className="text-[var(--accent)] hover:underline"
-									>
-										Darkroom Engineering
-									</button>
-								</div>
-								<div className="flex justify-between">
+									<div className="flex justify-between">
 									<span className="text-[var(--muted)]">Framework</span>
 									<span>Tauri + React</span>
 								</div>
@@ -230,14 +221,7 @@ export function Settings() {
 								<Button
 									variant="ghost"
 									size="sm"
-									onClick={() => open('https://github.com/darkroomengineering/specto')}
-								>
-									GitHub
-								</Button>
-								<Button
-									variant="ghost"
-									size="sm"
-									onClick={() => open('https://specto.darkroom.engineering')}
+									onClick={() => open('https://specto.dev')}
 								>
 									Website
 								</Button>
@@ -340,7 +324,7 @@ export function Settings() {
 									<div className="pt-2">
 										<Button
 											className="w-full"
-											onClick={() => open('https://specto.darkroom.engineering/downloads')}
+											onClick={() => open('https://specto.dev/downloads')}
 										>
 											Get Specto Pro
 										</Button>

@@ -4,7 +4,7 @@
 export const APP_VERSION = '1.1.1'
 export const RELEASE_DATE = 'January 2026'
 
-export const GITHUB_REPO = 'darkroomengineering/specto'
+export const GITHUB_REPO = 'specto-dev/specto'
 export const GITHUB_RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`
 
 export function getDownloadUrl(filename: string, version = APP_VERSION) {

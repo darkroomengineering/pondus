@@ -8,7 +8,7 @@ import s from './header.module.css'
 const navItems = [
 	{ href: '/#features', label: 'Features' },
 	{ href: '/#leaderboard', label: 'Leaderboard' },
-	{ href: 'https://github.com/darkroomengineering/specto', label: 'GitHub', external: true },
+	{ href: 'https://github.com/specto-dev/specto', label: 'GitHub', external: true },
 ]
 
 export function Header() {

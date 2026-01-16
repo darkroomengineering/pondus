@@ -1,18 +1,18 @@
 # Specto
 
-GitHub organization metrics dashboard by [Darkroom Engineering](https://darkroom.engineering).
+GitHub organization metrics dashboard.
 
 ## Quick Start
 
 ### CLI (via npm)
 
 ```bash
-npx specto-cli darkroomengineering
+npx specto-cli your-org
 ```
 
 ### Desktop App
 
-Download from [Releases](https://github.com/darkroomengineering/specto/releases) or visit [specto.darkroom.engineering](https://specto.darkroom.engineering).
+Download from [Releases](https://github.com/specto-dev/specto/releases) or visit [specto.dev](https://specto.dev).
 
 ## Monorepo Structure
 
@@ -29,7 +29,7 @@ Download from [Releases](https://github.com/darkroomengineering/specto/releases)
 | Package | Description |
 |---------|-------------|
 | `@specto/core` | Shared types and GitHub client |
-| `@specto/ui` | Darkroom-themed React components |
+| `@specto/ui` | Shared React components |
 
 ## Development
 

@@ -22,14 +22,6 @@
     "typescript": "^5.9.3"
   },
   "packageManager": "bun@1.2.18",
-  "author": "Darkroom Engineering <hi@darkroom.engineering> (https://darkroom.engineering)",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/darkroomengineering/specto.git"
-  },
-  "bugs": {
-    "url": "https://github.com/darkroomengineering/specto/issues"
-  },
-  "homepage": "https://github.com/darkroomengineering/specto#readme"
+  "author": "Specto",
+  "license": "MIT"
 }

@@ -1,12 +1,11 @@
 /**
- * Darkroom Design Tokens
- * Based on darkroomengineering/satus color system
+ * Specto Design Tokens
  */
 
 export const colors = {
 	black: '#000000',
 	white: '#ffffff',
-	red: '#e30613', // Darkroom brand red
+	red: '#e30613', // Brand red
 
 	// Grays
 	gray: {

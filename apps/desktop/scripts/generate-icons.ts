@@ -11,7 +11,7 @@ import { mkdir, writeFile } from 'fs/promises'
 import { join } from 'path'
 
 // Create SVG icon - macOS Sequoia style
-// Dark background with red accent "S" - matches Darkroom branding
+// Dark background with red accent "S"
 // macOS icons use ~16.67% padding (1/6th on each side)
 function createIconSvg(size: number): string {
 	const padding = size * 0.166 // macOS standard padding

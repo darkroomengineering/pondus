@@ -48,8 +48,8 @@ export default function SuccessPage() {
 
 				<p className="text-xs text-[var(--muted)] mt-8">
 					Questions? Contact us at{' '}
-					<a href="mailto:support@darkroom.engineering" className="text-[var(--accent)]">
-						support@darkroom.engineering
+					<a href="mailto:support@specto.dev" className="text-[var(--accent)]">
+						support@specto.dev
 					</a>
 				</p>
 			</div>

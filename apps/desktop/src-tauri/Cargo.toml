@@ -2,9 +2,8 @@
 name = "specto-desktop"
 version = "1.1.1"
 description = "GitHub organization metrics dashboard"
-authors = ["Darkroom Engineering <hi@darkroom.engineering>"]
+authors = ["Specto"]
 license = "MIT"
-repository = "https://github.com/darkroomengineering/specto"
 edition = "2021"
 
 [build-dependencies]
