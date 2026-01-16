@@ -1,21 +1,20 @@
 import { Button, Card } from '@specto/ui'
 import Link from 'next/link'
+import { getLeaderboardData, fallbackLeaderboardData } from '@/lib/github'
 
-// Hero leaderboard data
-const heroOrgs = [
-	{ rank: 1, name: 'vercel', avatarUrl: 'https://avatars.githubusercontent.com/u/14985020', score: 98.7, commits: '12.8k', trend: '+12%' },
-	{ rank: 2, name: 'facebook', avatarUrl: 'https://avatars.githubusercontent.com/u/69631', score: 95.2, commits: '11.2k', trend: '+8%' },
-	{ rank: 3, name: 'microsoft', avatarUrl: 'https://avatars.githubusercontent.com/u/6154722', score: 93.8, commits: '10.9k', trend: '+15%' },
-]
+// Format number for display
+function formatNumber(num: number): string {
+	if (num >= 1000) {
+		return (num / 1000).toFixed(1) + 'k'
+	}
+	return num.toString()
+}
 
-// Leaderboard section data
-const topOrgs = [
-	{ rank: 1, name: 'vercel', avatarUrl: 'https://avatars.githubusercontent.com/u/14985020', commits: 12847, prs: 3421, contributors: 89 },
-	{ rank: 2, name: 'facebook', avatarUrl: 'https://avatars.githubusercontent.com/u/69631', commits: 11203, prs: 2987, contributors: 156 },
-	{ rank: 3, name: 'microsoft', avatarUrl: 'https://avatars.githubusercontent.com/u/6154722', commits: 10892, prs: 2654, contributors: 203 },
-	{ rank: 4, name: 'google', avatarUrl: 'https://avatars.githubusercontent.com/u/1342004', commits: 9876, prs: 2341, contributors: 178 },
-	{ rank: 5, name: 'apple', avatarUrl: 'https://avatars.githubusercontent.com/u/10639145', commits: 8234, prs: 1987, contributors: 92 },
-]
+// Calculate a score based on activity
+function calculateScore(commits: number, prs: number, contributors: number): number {
+	const score = (commits * 0.5 + prs * 2 + contributors * 10) / 100
+	return Math.min(99.9, Math.max(50, score))
+}
 
 // Rank badge component
 function RankBadge({ rank }: { rank: number }) {
@@ -55,7 +54,28 @@ function RankBadge({ rank }: { rank: number }) {
 	)
 }
 
-export default function Home() {
+export default async function Home() {
+	// Fetch live leaderboard data
+	let leaderboardData = fallbackLeaderboardData
+	try {
+		leaderboardData = await getLeaderboardData()
+		if (leaderboardData.length === 0) {
+			leaderboardData = fallbackLeaderboardData
+		}
+	} catch {
+		// Use fallback data on error
+	}
+
+	// Prepare hero data (top 3)
+	const heroOrgs = leaderboardData.slice(0, 3).map((org, index) => ({
+		rank: index + 1,
+		name: org.name,
+		avatarUrl: org.avatarUrl,
+		score: calculateScore(org.commits, org.prs, org.contributors).toFixed(1),
+		commits: formatNumber(org.commits),
+		trend: ['+12%', '+8%', '+15%'][index] || '+5%',
+	}))
+
 	return (
 		<div className="min-h-screen bg-[var(--background)]">
 			{/* Hero section */}
@@ -223,67 +243,173 @@ export default function Home() {
 				</div>
 			</section>
 
-			{/* Leaderboard */}
-			<section id="leaderboard" className="py-24 px-6 bg-[var(--card)] border-t border-[var(--border)]">
+			{/* Desktop App Preview */}
+			<section id="app" className="py-16 sm:py-24 px-4 sm:px-6 bg-[var(--card)] border-t border-[var(--border)]">
 				<div className="max-w-6xl mx-auto">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl font-bold mb-4">Global Leaderboard</h2>
-						<p className="text-[var(--muted)]">See how organizations stack up worldwide</p>
+					<div className="text-center mb-8 sm:mb-16">
+						<h2 className="text-3xl sm:text-4xl font-bold mb-4">Powerful Desktop App</h2>
+						<p className="text-[var(--muted)]">Deep insights into any GitHub organization</p>
 					</div>
 
-					<div className="max-w-3xl mx-auto">
-						<div className="rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden">
-							<div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-[var(--border)] bg-[var(--card)] text-xs font-medium text-[var(--muted)] uppercase tracking-wider">
-								<div className="col-span-1">Rank</div>
-								<div className="col-span-5">Organization</div>
-								<div className="col-span-2 text-right">Commits</div>
-								<div className="col-span-2 text-right">PRs</div>
-								<div className="col-span-2 text-right">Contributors</div>
+					{/* Desktop App Mockup */}
+					<div className="relative max-w-5xl mx-auto">
+						{/* Glow effect */}
+						<div className="absolute -inset-4 bg-gradient-to-r from-[var(--accent)]/10 via-transparent to-[var(--accent)]/10 rounded-3xl blur-2xl opacity-50" />
+
+						<div className="relative rounded-xl border border-[var(--border)] bg-[var(--background)] shadow-2xl overflow-hidden">
+							{/* Window chrome */}
+							<div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-[var(--card)]">
+								<div className="flex gap-1.5">
+									<div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+									<div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+									<div className="w-3 h-3 rounded-full bg-[#28c840]" />
+								</div>
+								<span className="flex-1 text-center text-xs text-[var(--muted)]">Specto — vercel</span>
 							</div>
-							{topOrgs.map((org) => (
-								<div
-									key={org.name}
-									className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-[var(--border)] last:border-0 hover:bg-[var(--card)] transition-colors"
-								>
-									<div className="col-span-1">
-										{org.rank <= 3 ? (
-											<span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
-												org.rank === 1 ? 'bg-yellow-500/20 text-yellow-500' :
-												org.rank === 2 ? 'bg-gray-400/20 text-gray-400' :
-												'bg-amber-600/20 text-amber-600'
-											}`}>
-												{org.rank}
-											</span>
-										) : (
-											<span className="text-[var(--muted)]">{org.rank}</span>
-										)}
+
+							{/* App content */}
+							<div className="flex min-h-[400px] sm:min-h-[500px]">
+								{/* Sidebar */}
+								<div className="hidden sm:flex w-48 border-r border-[var(--border)] bg-[var(--card)] flex-col">
+									<nav className="p-2 pt-3">
+										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)] hover:bg-[var(--card-hover)] transition-colors">
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+											</svg>
+											<span>Dashboard</span>
+										</div>
+									</nav>
+									<div className="px-2 mt-1 flex-1">
+										<p className="px-3 py-1.5 text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider">Recents</p>
+										<div className="space-y-0.5">
+											{leaderboardData.slice(0, 3).map((org) => (
+												<div key={org.name} className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${org.name === 'vercel' ? 'bg-[var(--card-hover)] text-[var(--foreground)]' : 'text-[var(--muted)]'}`}>
+													<img src={`${org.avatarUrl}?s=32`} alt="" className="w-4 h-4 rounded" />
+													<span className="truncate">{org.name}</span>
+												</div>
+											))}
+										</div>
 									</div>
-									<div className="col-span-5 flex items-center gap-3">
-										<img
-											src={`${org.avatarUrl}?s=64`}
-											alt={org.name}
-											className="w-8 h-8 rounded-lg bg-[var(--card)] border border-[var(--border)]"
-										/>
-										<span className="font-medium">{org.name}</span>
-									</div>
-									<div className="col-span-2 text-right font-mono text-sm">
-										{org.commits.toLocaleString()}
-									</div>
-									<div className="col-span-2 text-right font-mono text-sm">
-										{org.prs.toLocaleString()}
-									</div>
-									<div className="col-span-2 text-right font-mono text-sm">
-										{org.contributors}
+									<div className="p-2 border-t border-[var(--border)]">
+										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)]">
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+											</svg>
+											<span>Settings</span>
+										</div>
 									</div>
 								</div>
-							))}
-						</div>
 
-						<div className="text-center mt-8">
-							<Link href="/leaderboard">
-								<Button variant="secondary">View Full Leaderboard</Button>
-							</Link>
+								{/* Main content - Organization view */}
+								<div className="flex-1 p-4 sm:p-6 overflow-hidden">
+									{/* Header */}
+									<div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+										<div>
+											<p className="text-xs text-[var(--muted)] mb-1">← back</p>
+											<h2 className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
+												vercel
+												<span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-500">Connected</span>
+											</h2>
+											<p className="text-xs sm:text-sm text-[var(--muted)] mt-1">Develop. Preview. Ship.</p>
+										</div>
+										<div className="flex gap-2">
+											<select className="px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] text-xs">
+												<option>Last 30 days</option>
+											</select>
+											<select className="px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] text-xs">
+												<option>Commits</option>
+											</select>
+										</div>
+									</div>
+
+									{/* Stats grid */}
+									<div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+										{[
+											{ label: 'Total Commits', value: formatNumber(leaderboardData[0]?.commits || 12847), desc: 'Last 30 days' },
+											{ label: 'Pull Requests', value: formatNumber(leaderboardData[0]?.prs || 3421), desc: 'Last 30 days' },
+											{ label: 'Issues', value: '1.2k', desc: 'Last 30 days' },
+											{ label: 'Repositories', value: leaderboardData[0]?.repos?.toString() || '156', desc: 'Total repos' },
+										].map((stat) => (
+											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+												<p className="text-xl sm:text-2xl font-bold text-[var(--accent)]">{stat.value}</p>
+												<p className="text-[10px] sm:text-xs font-medium">{stat.label}</p>
+												<p className="text-[9px] sm:text-[10px] text-[var(--muted)]">{stat.desc}</p>
+											</div>
+										))}
+									</div>
+
+									{/* Secondary stats */}
+									<div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+										{[
+											{ label: 'Members', value: leaderboardData[0]?.contributors?.toString() || '89', desc: 'Organization members' },
+											{ label: 'Teams', value: '12', desc: 'Active teams' },
+											{ label: 'Contributors', value: '234', desc: 'Active contributors' },
+											{ label: 'Avg Commits', value: '145', desc: 'Per contributor' },
+										].map((stat) => (
+											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+												<p className="text-xl sm:text-2xl font-bold text-[var(--accent)]">{stat.value}</p>
+												<p className="text-[10px] sm:text-xs font-medium">{stat.label}</p>
+												<p className="text-[9px] sm:text-[10px] text-[var(--muted)]">{stat.desc}</p>
+											</div>
+										))}
+									</div>
+
+									{/* Tables */}
+									<div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+										{/* Top Contributors */}
+										<div className="rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden">
+											<div className="px-4 py-3 border-b border-[var(--border)]">
+												<h3 className="text-sm font-medium">Top Contributors (Commits)</h3>
+											</div>
+											<div className="divide-y divide-[var(--border)]">
+												{['rauchg', 'timneutkens', 'shuding', 'sokra', 'Timer'].map((author, i) => (
+													<div key={author} className="flex items-center justify-between px-4 py-2 text-sm">
+														<span className="font-medium">{author}</span>
+														<div className="flex items-center gap-4">
+															<span className="text-[var(--accent)]">{Math.floor(1200 / (i + 1))}</span>
+															<span className="text-[var(--muted)] text-xs">{(30 - i * 5).toFixed(1)}%</span>
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+
+										{/* Teams */}
+										<div className="rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden">
+											<div className="px-4 py-3 border-b border-[var(--border)]">
+												<h3 className="text-sm font-medium">Teams</h3>
+											</div>
+											<div className="divide-y divide-[var(--border)]">
+												{[
+													{ name: 'Next.js', privacy: 'visible', members: 23 },
+													{ name: 'Turborepo', privacy: 'visible', members: 15 },
+													{ name: 'Infrastructure', privacy: 'secret', members: 8 },
+													{ name: 'Design', privacy: 'visible', members: 12 },
+													{ name: 'Security', privacy: 'secret', members: 5 },
+												].map((team) => (
+													<div key={team.name} className="flex items-center justify-between px-4 py-2 text-sm">
+														<span className="font-medium">{team.name}</span>
+														<div className="flex items-center gap-3">
+															<span className={`px-1.5 py-0.5 rounded text-[10px] ${team.privacy === 'secret' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-emerald-500/20 text-emerald-500'}`}>
+																{team.privacy}
+															</span>
+															<span className="text-[var(--muted)]">{team.members}</span>
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
+					</div>
+
+					<div className="text-center mt-8">
+						<Link href="/downloads">
+							<Button>Download Desktop App</Button>
+						</Link>
 					</div>
 				</div>
 			</section>
