@@ -1,6 +1,8 @@
 // GitHub API functions for fetching org metrics
 // Used for leaderboards across web and desktop app
 
+import { unstable_cache } from 'next/cache'
+
 export interface OrgStats {
 	name: string
 	avatarUrl: string
@@ -77,15 +79,6 @@ const CATEGORY_ORGS: Record<LeaderboardCategory, string[]> = {
 	],
 }
 
-interface CacheEntry {
-	data: OrgStats[]
-	timestamp: number
-}
-
-// Per-category cache
-const cache: Record<string, CacheEntry> = {}
-const CACHE_TTL = 1000 * 60 * 30 // 30 minutes
-
 // GitHub token for higher rate limits (optional)
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
@@ -100,32 +93,37 @@ function getGitHubHeaders() {
 	return headers
 }
 
-// Track rate limit status
-let rateLimitHit = false
-let rateLimitResetTime = 0
+/**
+ * Parallel fetch with concurrency limit
+ */
+async function parallelFetch<T, R>(
+	items: T[],
+	fetcher: (item: T) => Promise<R>,
+	concurrency = 5
+): Promise<R[]> {
+	const results: R[] = []
 
-async function fetchOrgDetails(orgLogin: string): Promise<OrgStats | null> {
-	// Skip API calls if we're rate limited
-	if (rateLimitHit && Date.now() < rateLimitResetTime) {
-		console.warn(`Skipping ${orgLogin} - rate limited until ${new Date(rateLimitResetTime).toISOString()}`)
-		return null
+	for (let i = 0; i < items.length; i += concurrency) {
+		const batch = items.slice(i, i + concurrency)
+		const batchResults = await Promise.all(batch.map(fetcher))
+		results.push(...batchResults)
 	}
 
+	return results
+}
+
+async function fetchOrgDetails(orgLogin: string): Promise<OrgStats | null> {
 	try {
 		const headers = getGitHubHeaders()
 
 		const orgRes = await fetch(`https://api.github.com/orgs/${orgLogin}`, {
 			headers,
-			next: { revalidate: 1800 },
+			next: { revalidate: 3600 }, // Cache for 1 hour
 		})
 
 		// Check for rate limiting
 		if (orgRes.status === 403 || orgRes.status === 429) {
-			const resetHeader = orgRes.headers.get('x-ratelimit-reset')
-			rateLimitHit = true
-			rateLimitResetTime = resetHeader ? parseInt(resetHeader) * 1000 : Date.now() + 60000
-			console.error(`GitHub API rate limited! Resets at ${new Date(rateLimitResetTime).toISOString()}`)
-			console.error('Add GITHUB_TOKEN to .env.local for 5000 req/hour (vs 60 without)')
+			console.error(`GitHub API rate limited for ${orgLogin}! Add GITHUB_TOKEN to .env.local`)
 			return null
 		}
 
@@ -135,29 +133,22 @@ async function fetchOrgDetails(orgLogin: string): Promise<OrgStats | null> {
 		}
 		const orgData = await orgRes.json()
 
-		// Fetch top repos to count stars (get more repos for accuracy)
+		// Fetch top repos to count stars
 		const reposRes = await fetch(
 			`https://api.github.com/orgs/${orgLogin}/repos?sort=stars&direction=desc&per_page=100`,
 			{
 				headers,
-				next: { revalidate: 1800 },
+				next: { revalidate: 3600 }, // Cache for 1 hour
 			}
 		)
 
 		let totalStars = 0
-		if (reposRes.status === 403 || reposRes.status === 429) {
-			const resetHeader = reposRes.headers.get('x-ratelimit-reset')
-			rateLimitHit = true
-			rateLimitResetTime = resetHeader ? parseInt(resetHeader) * 1000 : Date.now() + 60000
-			console.error(`GitHub API rate limited on repos! Add GITHUB_TOKEN to .env.local`)
-		} else if (reposRes.ok) {
+		if (reposRes.ok) {
 			const repos = await reposRes.json()
 			if (Array.isArray(repos)) {
 				totalStars = repos.reduce((sum: number, r: { stargazers_count?: number }) =>
 					sum + (r.stargazers_count || 0), 0)
 			}
-		} else {
-			console.warn(`Failed to fetch repos for ${orgLogin}: ${reposRes.status}`)
 		}
 
 		return {
@@ -175,23 +166,32 @@ async function fetchOrgDetails(orgLogin: string): Promise<OrgStats | null> {
 	}
 }
 
-export async function getLeaderboardData(category: LeaderboardCategory = 'developer-favorites'): Promise<OrgStats[]> {
-	const cacheKey = category
+/**
+ * Calculate activity scores for orgs
+ */
+function calculateScores(orgs: OrgStats[]): OrgStats[] {
+	const starsPerRepo = orgs.map(o => o.repos > 0 ? o.stars / o.repos : 0)
+	const maxStarsPerRepo = Math.max(...starsPerRepo, 1)
+	const maxFollowers = Math.max(...orgs.map(o => o.followers), 1)
 
-	// Check cache first
-	if (cache[cacheKey] && Date.now() - cache[cacheKey].timestamp < CACHE_TTL) {
-		return cache[cacheKey].data
-	}
+	return orgs.map((org, i) => ({
+		...org,
+		activityScore: Math.round(
+			(((starsPerRepo[i] ?? 0) / maxStarsPerRepo) * 70) + // 70% stars-per-repo
+			((org.followers / maxFollowers) * 30) // 30% followers
+		)
+	}))
+}
 
-	// If we're rate limited, return fallback immediately
-	if (rateLimitHit && Date.now() < rateLimitResetTime) {
-		console.warn(`Using fallback data for ${category} - rate limited`)
-		return getFallbackData(category)
-	}
-
+/**
+ * Internal function to fetch leaderboard data
+ */
+async function fetchLeaderboardData(category: LeaderboardCategory): Promise<OrgStats[]> {
 	try {
 		const orgLogins = CATEGORY_ORGS[category]
-		const results = await Promise.all(orgLogins.map(fetchOrgDetails))
+
+		// Fetch orgs in parallel with limited concurrency (5 at a time)
+		const results = await parallelFetch(orgLogins, fetchOrgDetails, 5)
 		const validOrgs = results.filter((o): o is OrgStats => o !== null)
 
 		if (validOrgs.length === 0) {
@@ -199,37 +199,27 @@ export async function getLeaderboardData(category: LeaderboardCategory = 'develo
 			return getFallbackData(category)
 		}
 
-		// If we got partial data (some orgs failed), log it
-		if (validOrgs.length < orgLogins.length) {
-			console.warn(`Only fetched ${validOrgs.length}/${orgLogins.length} orgs for ${category}`)
-		}
-
-		// Calculate activity scores
-		// Using stars-per-repo as main metric (rewards quality over quantity)
-		const starsPerRepo = validOrgs.map(o => o.repos > 0 ? o.stars / o.repos : 0)
-		const maxStarsPerRepo = Math.max(...starsPerRepo)
-		const maxFollowers = Math.max(...validOrgs.map(o => o.followers))
-
-		const scoredOrgs = validOrgs.map((org, i) => ({
-			...org,
-			activityScore: Math.round(
-				(((starsPerRepo[i] ?? 0) / maxStarsPerRepo) * 70) + // 70% stars-per-repo
-				((org.followers / maxFollowers) * 30) // 30% followers
-			)
-		}))
-
-		// Sort by score
-		const sorted = scoredOrgs.sort((a, b) => b.activityScore - a.activityScore)
-
-		// Update cache
-		cache[cacheKey] = { data: sorted, timestamp: Date.now() }
-
-		return sorted
+		// Calculate activity scores and sort
+		const scoredOrgs = calculateScores(validOrgs)
+		return scoredOrgs.sort((a, b) => b.activityScore - a.activityScore)
 	} catch (error) {
 		console.error('Failed to fetch leaderboard:', error)
 		return getFallbackData(category)
 	}
 }
+
+/**
+ * Get leaderboard data with Next.js caching (ISR)
+ * Caches data for 30 minutes, revalidates in background
+ */
+export const getLeaderboardData = unstable_cache(
+	fetchLeaderboardData,
+	['leaderboard'],
+	{
+		revalidate: 1800, // 30 minutes
+		tags: ['leaderboard'],
+	}
+)
 
 // Fallback data per category
 function getFallbackData(category: LeaderboardCategory): OrgStats[] {

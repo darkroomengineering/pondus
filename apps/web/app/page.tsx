@@ -18,7 +18,7 @@ export default async function Home() {
 	// Fetch live leaderboard data for initial render
 	let leaderboardData = fallbackLeaderboardData
 	try {
-		leaderboardData = await getLeaderboardData()
+		leaderboardData = await getLeaderboardData('developer-favorites')
 		if (leaderboardData.length === 0) {
 			leaderboardData = fallbackLeaderboardData
 		}

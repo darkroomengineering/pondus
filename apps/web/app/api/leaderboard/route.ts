@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getLeaderboardData, LEADERBOARD_CATEGORIES, type LeaderboardCategory } from '@/lib/github'
 
-// Disable Next.js route caching - we handle caching in getLeaderboardData
-export const dynamic = 'force-dynamic'
+// Enable ISR with 30 minute revalidation
+export const revalidate = 1800
 
 export async function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams
@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
 			{ data, category: validCategory },
 			{
 				headers: {
-					'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+					// CDN cache for 1 hour, allow stale for 24 hours while revalidating
+					'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
 				},
 			}
 		)
