@@ -4,14 +4,15 @@ export const GITHUB_REPO = 'darkroomengineering/specto'
 export const GITHUB_RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`
 
 // Asset filename patterns to match in releases
+// Patterns match Tauri's default naming: {name}_{version}_{arch}.{ext}
 export const ASSET_PATTERNS = {
 	macos: {
-		arm64: /_aarch64\.dmg$/,
-		x64: /_x64\.dmg$/,
+		arm64: /aarch64\.dmg$/i,
+		x64: /_x64\.dmg$/i,
 	},
 	windows: {
-		exe: /_x64-setup\.exe$/,
-		msi: /_x64_en-US\.msi$/,
+		exe: /x64-setup\.exe$/i,
+		msi: /\.msi$/i,
 	},
 } as const
 
