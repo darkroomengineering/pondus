@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card, Stat, Table, Badge, Button, Select } from '@specto/ui'
+import { toast } from 'sonner'
 import { useGitHubStore, type Timeframe, type MetricType } from '../stores/github'
 import { useProFeature, exportData } from '../stores/license'
 import { Spinner } from '../components/spinner'
@@ -14,7 +15,6 @@ const metricOptions = [
 export function Organization() {
 	const { isPro, canExport } = useProFeature()
 	const [isExporting, setIsExporting] = useState(false)
-	const [exportError, setExportError] = useState<string | null>(null)
 	const [showExportMenu, setShowExportMenu] = useState(false)
 
 	// Timeframe options with Pro gating
@@ -61,7 +61,6 @@ export function Organization() {
 		}
 
 		setIsExporting(true)
-		setExportError(null)
 		setShowExportMenu(false)
 
 		const result = await exportData(format, {
@@ -89,8 +88,9 @@ export function Organization() {
 			a.click()
 			document.body.removeChild(a)
 			URL.revokeObjectURL(url)
+			toast.success('Export downloaded successfully')
 		} else {
-			setExportError(result.error || 'Export failed')
+			toast.error(result.error || 'Export failed')
 		}
 	}
 
@@ -463,25 +463,6 @@ export function Organization() {
 				</Card>
 			</div>
 
-			{/* Toast notification */}
-			{exportError && (
-				<div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-2 fade-in duration-200">
-					<div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[var(--card)] border border-[var(--color-error)] shadow-lg">
-						<svg className="w-5 h-5 text-[var(--color-error)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-						</svg>
-						<p className="text-sm text-[var(--foreground)]">{exportError}</p>
-						<button
-							onClick={() => setExportError(null)}
-							className="ml-2 p-1 rounded hover:bg-[var(--card-hover)] transition-colors"
-						>
-							<svg className="w-4 h-4 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-							</svg>
-						</button>
-					</div>
-				</div>
-			)}
 		</div>
 	)
 }

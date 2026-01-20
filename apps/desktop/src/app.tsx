@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { Layout } from './components/layout'
 import { AuthGuard } from './components/auth-guard'
 import { Updater } from './components/updater'
@@ -10,6 +11,17 @@ import { Settings } from './pages/settings'
 export function App() {
 	return (
 		<BrowserRouter>
+			<Toaster
+				position="bottom-right"
+				theme="dark"
+				toastOptions={{
+					style: {
+						background: 'var(--card)',
+						border: '1px solid var(--border)',
+						color: 'var(--foreground)',
+					},
+				}}
+			/>
 			<Updater />
 			<AuthGuard>
 				<Routes>

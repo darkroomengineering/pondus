@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, Button, Badge } from '@specto/ui'
+import { toast } from 'sonner'
 import { useAuthStore } from '../stores/auth'
 import { useLicenseStore, useProFeature, FREE_LIMITS } from '../stores/license'
 import { Spinner } from '../components/spinner'
@@ -75,6 +76,13 @@ export function Settings() {
 	} = useLicenseStore()
 	const { isPro, isDev } = useProFeature()
 	const [keyInput, setKeyInput] = useState('')
+
+	// Show toast on license error
+	useEffect(() => {
+		if (licenseError) {
+			toast.error(licenseError)
+		}
+	}, [licenseError])
 
 	return (
 		<div className="h-full flex flex-col p-6 overflow-auto">
@@ -313,11 +321,7 @@ export function Settings() {
 												{isValidating ? <Spinner size="sm" /> : 'Activate'}
 											</Button>
 										</div>
-										{licenseError && (
-											<div className="py-2.5 px-3 rounded-md bg-[var(--color-error)]/10 border border-[var(--color-error)]/20">
-												<p className="text-sm text-[var(--color-error)]">{licenseError}</p>
-											</div>
-										)}
+
 									</div>
 
 									<Button
