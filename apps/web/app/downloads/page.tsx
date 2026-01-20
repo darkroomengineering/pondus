@@ -98,7 +98,7 @@ export default async function DownloadsPage() {
 													</p>
 													{asset && (
 														<p className="text-xs text-[var(--muted)]">
-															{asset.name} • {formatBytes(asset.size)}
+															{formatBytes(asset.size)}
 														</p>
 													)}
 												</div>
