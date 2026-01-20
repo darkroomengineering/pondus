@@ -9,8 +9,8 @@ const footerLinks = {
 		{ href: '/#pricing', label: 'Pricing' },
 	],
 	resources: [
-		{ href: 'https://github.com/specto-dev/specto', label: 'GitHub', external: true },
-		{ href: 'https://github.com/specto-dev/specto#readme', label: 'Documentation', external: true },
+		{ href: 'https://github.com/darkroomengineering/specto', label: 'GitHub', external: true },
+		{ href: 'https://github.com/darkroomengineering/specto#readme', label: 'Documentation', external: true },
 	],
 }
 

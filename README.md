@@ -12,7 +12,7 @@ npx specto-cli your-org
 
 ### Desktop App
 
-Download from [Releases](https://github.com/specto-dev/specto/releases) or visit [specto.dev](https://specto.dev).
+Download from [Releases](https://github.com/darkroomengineering/specto/releases) or visit [specto.dev](https://specto.dev).
 
 ## Monorepo Structure
 
