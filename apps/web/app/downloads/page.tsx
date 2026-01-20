@@ -2,6 +2,9 @@ import { Button, Card } from '@specto/ui'
 import Link from 'next/link'
 import { getLatestRelease, type ReleaseAsset } from '@/lib/config'
 
+// Revalidate every 60 seconds to pick up new releases quickly
+export const revalidate = 60
+
 // Format bytes to human readable
 function formatBytes(bytes: number): string {
 	const mb = bytes / (1024 * 1024)

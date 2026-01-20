@@ -88,7 +88,7 @@ export async function getLatestRelease(): Promise<ReleaseInfo | null> {
 			`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=5`,
 			{
 				headers,
-				next: { revalidate: 300 }, // Cache for 5 minutes (shorter to pick up new builds)
+				next: { revalidate: 60 }, // Cache for 1 minute to pick up new builds quickly
 			}
 		)
 
