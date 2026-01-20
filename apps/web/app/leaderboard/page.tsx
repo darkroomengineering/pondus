@@ -49,6 +49,7 @@ function LeaderboardContent() {
 
 	const [data, setData] = useState<OrgStats[]>([])
 	const [isLoading, setIsLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
 
 	const setCategory = (newCategory: string) => {
 		router.push(`/leaderboard?category=${newCategory}`)
@@ -57,12 +58,17 @@ function LeaderboardContent() {
 	useEffect(() => {
 		async function fetchData() {
 			setIsLoading(true)
+			setError(null)
 			try {
 				const res = await fetch(`/api/leaderboard?category=${category}`, { cache: 'no-store' })
+				if (!res.ok) {
+					throw new Error(`Failed to fetch: ${res.status}`)
+				}
 				const json = await res.json()
 				setData(json.data || [])
-			} catch (error) {
-				console.error('Failed to fetch leaderboard:', error)
+			} catch (err) {
+				console.error('Failed to fetch leaderboard:', err)
+				setError(err instanceof Error ? err.message : 'Failed to load leaderboard')
 			} finally {
 				setIsLoading(false)
 			}
@@ -175,6 +181,7 @@ function LeaderboardContent() {
 									<img
 										src={`${org.avatarUrl}?s=64`}
 										alt={org.name}
+										loading="lazy"
 										className="w-8 h-8 rounded-lg"
 									/>
 									<div className="min-w-0">
@@ -200,8 +207,22 @@ function LeaderboardContent() {
 							</a>
 						))}
 
+						{/* Error state */}
+						{!isLoading && error && (
+							<div className="px-6 py-12 text-center">
+								<div className="text-red-500 mb-2">Failed to load leaderboard</div>
+								<p className="text-sm text-[var(--muted)]">{error}</p>
+								<button
+									onClick={() => window.location.reload()}
+									className="mt-4 px-4 py-2 text-sm rounded-lg border border-[var(--border)] hover:bg-[var(--background)] transition-colors"
+								>
+									Try again
+								</button>
+							</div>
+						)}
+
 						{/* Empty state */}
-						{!isLoading && data.length === 0 && (
+						{!isLoading && !error && data.length === 0 && (
 							<div className="px-6 py-12 text-center text-[var(--muted)]">
 								No organizations found for this category.
 							</div>

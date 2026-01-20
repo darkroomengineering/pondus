@@ -18,8 +18,17 @@ interface LicenseResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<LicenseResponse>> {
 	try {
-		const body: ValidateRequest = await request.json()
-		const { licenseKey } = body
+		const body = await request.json().catch(() => null)
+
+		// Validate request body structure
+		if (!body || typeof body !== 'object' || typeof body.licenseKey !== 'string') {
+			return NextResponse.json(
+				{ valid: false, isPro: false, expiresAt: null, error: 'Invalid request body' },
+				{ status: 400 }
+			)
+		}
+
+		const { licenseKey } = body as ValidateRequest
 
 		if (!licenseKey) {
 			return NextResponse.json(

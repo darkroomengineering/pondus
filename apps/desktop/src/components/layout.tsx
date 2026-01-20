@@ -205,6 +205,7 @@ export function Layout() {
 								onBlur={() => !orgInput && setSearchFocused(false)}
 								onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
 								placeholder="Search organization..."
+								aria-label="Search for a GitHub organization"
 								className="flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none"
 							/>
 							{!searchFocused && !orgInput && (
@@ -215,6 +216,7 @@ export function Layout() {
 							{orgInput && (
 								<button
 									onClick={handleSearch}
+									aria-label="Go to organization"
 									className="flex-shrink-0 p-1 rounded-full bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors"
 								>
 									<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
