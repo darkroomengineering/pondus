@@ -42,3 +42,5 @@ coverage/
 bun.lock
 .claude/
 .tool-versions
+.vercel
+.env*.local
