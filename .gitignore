@@ -41,3 +41,4 @@ coverage/
 # Bun
 bun.lock
 .claude/
+.tool-versions
