@@ -6,6 +6,9 @@
   "permissions": [
     "core:default",
     "shell:allow-open",
+    "updater:default",
+    "process:allow-restart",
+    "process:allow-exit",
     {
       "identifier": "shell:allow-execute",
       "allow": [
