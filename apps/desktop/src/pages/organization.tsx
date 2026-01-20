@@ -35,6 +35,8 @@ export function Organization() {
 		orgData,
 		isLoading,
 		error,
+		notFound,
+		suggestions,
 		timeframe,
 		metricType,
 		setOrg,
@@ -446,9 +448,43 @@ export function Organization() {
 				<Card className="mb-6 border-[var(--color-error)]">
 					<Card.Content>
 						<p className="text-[var(--color-error)] text-sm">{error}</p>
-						<Button variant="secondary" size="sm" className="mt-2" onClick={fetchAll}>
-							Retry
-						</Button>
+						{!notFound && (
+							<Button variant="secondary" size="sm" className="mt-2" onClick={fetchAll}>
+								Retry
+							</Button>
+						)}
+					</Card.Content>
+				</Card>
+			)}
+
+			{/* Suggestions when org not found */}
+			{notFound && suggestions.length > 0 && (
+				<Card className="mb-6">
+					<Card.Header>
+						<h2 className="text-lg font-medium">Did you mean?</h2>
+					</Card.Header>
+					<Card.Content>
+						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+							{suggestions.map((org) => (
+								<button
+									key={org.login}
+									onClick={() => navigate(`/org/${org.login}`)}
+									className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--card-hover)] transition-all text-left"
+								>
+									<img
+										src={org.avatar_url}
+										alt={org.login}
+										className="w-10 h-10 rounded-lg"
+									/>
+									<div className="flex-1 min-w-0">
+										<p className="text-sm font-medium truncate">{org.login}</p>
+										{org.description && (
+											<p className="text-xs text-[var(--muted)] truncate">{org.description}</p>
+										)}
+									</div>
+								</button>
+							))}
+						</div>
 					</Card.Content>
 				</Card>
 			)}

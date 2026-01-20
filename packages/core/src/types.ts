@@ -2,6 +2,7 @@ export interface Organization {
 	login: string
 	id: number
 	name: string | null
+	avatar_url: string
 	description: string | null
 	company: string | null
 	blog: string | null

@@ -112,6 +112,12 @@ interface OrgData {
 	totalLinesDeleted: number
 }
 
+interface OrgSuggestion {
+	login: string
+	avatar_url: string
+	description: string | null
+}
+
 interface GitHubState {
 	currentOrg: string | null
 	orgData: OrgData
@@ -127,6 +133,8 @@ interface GitHubState {
 		issues: boolean
 	}
 	error: string | null
+	notFound: boolean
+	suggestions: OrgSuggestion[]
 	setOrg: (org: string) => void
 	setTimeframe: (tf: Timeframe) => void
 	setMetricType: (mt: MetricType) => void
@@ -236,6 +244,8 @@ export const useGitHubStore = create<GitHubState>((set, get) => ({
 		issues: false,
 	},
 	error: null,
+	notFound: false,
+	suggestions: [],
 
 	setOrg: (org) => {
 		set({
@@ -255,6 +265,8 @@ export const useGitHubStore = create<GitHubState>((set, get) => ({
 				totalLinesDeleted: 0,
 			},
 			error: null,
+			notFound: false,
+			suggestions: [],
 		})
 	},
 
@@ -273,12 +285,70 @@ export const useGitHubStore = create<GitHubState>((set, get) => ({
 		const { currentOrg } = get()
 		if (!currentOrg) return
 
-		set((s) => ({ isLoading: { ...s.isLoading, info: true }, error: null }))
-		try {
-			const info = await githubFetch<Organization>(`/orgs/${currentOrg}`)
+		set((s) => ({ isLoading: { ...s.isLoading, info: true }, error: null, notFound: false, suggestions: [] }))
+
+		const token = await useAuthStore.getState().getToken()
+		if (!token) {
 			set((s) => ({
-				orgData: { ...s.orgData, info },
 				isLoading: { ...s.isLoading, info: false },
+				error: 'Not authenticated',
+			}))
+			return
+		}
+
+		try {
+			const response = await fetch(`https://api.github.com/orgs/${currentOrg}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					Accept: 'application/vnd.github+json',
+				},
+			})
+
+			if (response.ok) {
+				const info = await response.json() as Organization
+				set((s) => ({
+					orgData: { ...s.orgData, info },
+					isLoading: { ...s.isLoading, info: false },
+				}))
+				return
+			}
+
+			// Handle 404 - org not found
+			if (response.status === 404) {
+				// Search for similar organizations
+				const searchResponse = await fetch(
+					`https://api.github.com/search/users?q=${encodeURIComponent(currentOrg)}+type:org&per_page=5`,
+					{
+						headers: {
+							Authorization: `Bearer ${token}`,
+							Accept: 'application/vnd.github+json',
+						},
+					}
+				)
+
+				let suggestions: OrgSuggestion[] = []
+				if (searchResponse.ok) {
+					const searchData = await searchResponse.json()
+					suggestions = (searchData.items || []).map((item: { login: string; avatar_url: string; description?: string }) => ({
+						login: item.login,
+						avatar_url: item.avatar_url,
+						description: item.description || null,
+					}))
+				}
+
+				set((s) => ({
+					isLoading: { ...s.isLoading, info: false },
+					error: `Organization "${currentOrg}" not found`,
+					notFound: true,
+					suggestions,
+				}))
+				return
+			}
+
+			// Other errors
+			set((s) => ({
+				isLoading: { ...s.isLoading, info: false },
+				error: `GitHub API error: ${response.status}`,
 			}))
 		} catch (err) {
 			set((s) => ({

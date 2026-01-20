@@ -3,6 +3,7 @@ import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { cn } from '@specto/ui'
 import { useAuthStore } from '../stores/auth'
 import { useProFeature } from '../stores/license'
+import { useGitHubStore } from '../stores/github'
 
 interface RecentOrg {
 	login: string
@@ -27,17 +28,19 @@ export function Layout() {
 		}
 	}, [])
 
-	// Track org visits
+	// Track org visits - only add to history if org was found
+	const { orgData, notFound } = useGitHubStore()
 	useEffect(() => {
 		const match = location.pathname.match(/^\/org\/(.+)$/)
 		const orgLogin = match?.[1]
-		if (orgLogin) {
-			const newOrg = { login: orgLogin }
+		// Only add to history if we have org info (meaning it was found)
+		if (orgLogin && orgData.info && !notFound) {
+			const newOrg = { login: orgLogin, avatar_url: orgData.info.avatar_url }
 			const updated = [newOrg, ...recentOrgs.filter(o => o.login !== orgLogin)].slice(0, 5)
 			localStorage.setItem('specto:recent-orgs', JSON.stringify(updated))
 			setRecentOrgs(updated)
 		}
-	}, [location.pathname])
+	}, [location.pathname, orgData.info, notFound])
 
 	// Keyboard shortcut for search (CMD+K)
 	useEffect(() => {
