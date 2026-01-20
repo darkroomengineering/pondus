@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Generate app icons for Specto from the website favicon
+ * Crops padding to match macOS dock icon sizes
  * Run: bun run apps/desktop/scripts/generate-icons.ts
  */
 
@@ -33,10 +34,25 @@ async function main() {
 
 	try {
 		const sharp = await import('sharp')
-		const source = sharp.default(sourceIcon).ensureAlpha()
+
+		// Crop transparent padding from source (80px on each side)
+		// Then resize to fill canvas for proper dock icon size
+		const padding = 80
+		const cropped = await sharp
+			.default(sourceIcon)
+			.extract({
+				left: padding,
+				top: padding,
+				width: 1024 - padding * 2,
+				height: 1024 - padding * 2,
+			})
+			.resize(1024, 1024)
+			.ensureAlpha()
+			.png()
+			.toBuffer()
 
 		for (const { name, size } of sizes) {
-			const buffer = await source.clone().resize(size, size).png().toBuffer()
+			const buffer = await sharp.default(cropped).resize(size, size).png().toBuffer()
 			await writeFile(join(iconsDir, name), buffer)
 			console.log(`Created ${name}`)
 		}

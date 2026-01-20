@@ -1,6 +1,6 @@
 {
   "name": "@specto/desktop",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "private": true,
   "description": "Specto Desktop - GitHub organization metrics dashboard",
   "type": "module",
