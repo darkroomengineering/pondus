@@ -31,7 +31,47 @@ export interface ReleaseInfo {
 	}
 }
 
+// Parse assets from a release
+function parseReleaseAssets(release: {
+	tag_name: string
+	published_at: string
+	assets: Array<{ name: string; browser_download_url: string; size: number }>
+}): ReleaseInfo {
+	const findAsset = (pattern: RegExp): ReleaseAsset | null => {
+		const asset = release.assets.find((a) => pattern.test(a.name))
+		return asset
+			? { name: asset.name, url: asset.browser_download_url, size: asset.size }
+			: null
+	}
+
+	return {
+		version: release.tag_name.replace(/^v/, ''),
+		publishedAt: release.published_at,
+		assets: {
+			macos: {
+				arm64: findAsset(ASSET_PATTERNS.macos.arm64),
+				x64: findAsset(ASSET_PATTERNS.macos.x64),
+			},
+			windows: {
+				exe: findAsset(ASSET_PATTERNS.windows.exe),
+				msi: findAsset(ASSET_PATTERNS.windows.msi),
+			},
+		},
+	}
+}
+
+// Check if release has at least one downloadable asset
+function hasDownloadableAssets(info: ReleaseInfo): boolean {
+	return !!(
+		info.assets.macos.arm64 ||
+		info.assets.macos.x64 ||
+		info.assets.windows.exe ||
+		info.assets.windows.msi
+	)
+}
+
 // Fetch latest release from GitHub API
+// Falls back to previous releases if latest has no assets (build in progress)
 export async function getLatestRelease(): Promise<ReleaseInfo | null> {
 	try {
 		const headers: HeadersInit = {
@@ -43,49 +83,44 @@ export async function getLatestRelease(): Promise<ReleaseInfo | null> {
 			headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`
 		}
 
+		// Fetch multiple releases to find one with assets
 		const response = await fetch(
-			`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`,
+			`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=5`,
 			{
 				headers,
-				next: { revalidate: 3600 }, // Cache for 1 hour
+				next: { revalidate: 300 }, // Cache for 5 minutes (shorter to pick up new builds)
 			}
 		)
 
 		if (!response.ok) {
-			console.error('Failed to fetch release:', response.status)
+			console.error('Failed to fetch releases:', response.status)
 			return null
 		}
 
-		const release = await response.json()
-
-		// Parse assets
-		const assets = release.assets as Array<{
-			name: string
-			browser_download_url: string
-			size: number
+		const releases = await response.json() as Array<{
+			tag_name: string
+			published_at: string
+			draft: boolean
+			prerelease: boolean
+			assets: Array<{ name: string; browser_download_url: string; size: number }>
 		}>
 
-		const findAsset = (pattern: RegExp): ReleaseAsset | null => {
-			const asset = assets.find((a) => pattern.test(a.name))
-			return asset
-				? { name: asset.name, url: asset.browser_download_url, size: asset.size }
-				: null
+		// Find first non-draft release with downloadable assets
+		for (const release of releases) {
+			if (release.draft || release.prerelease) continue
+
+			const info = parseReleaseAssets(release)
+			if (hasDownloadableAssets(info)) {
+				return info
+			}
 		}
 
-		return {
-			version: release.tag_name.replace(/^v/, ''),
-			publishedAt: release.published_at,
-			assets: {
-				macos: {
-					arm64: findAsset(ASSET_PATTERNS.macos.arm64),
-					x64: findAsset(ASSET_PATTERNS.macos.x64),
-				},
-				windows: {
-					exe: findAsset(ASSET_PATTERNS.windows.exe),
-					msi: findAsset(ASSET_PATTERNS.windows.msi),
-				},
-			},
+		// If no release has assets, return the latest version info anyway
+		if (releases.length > 0) {
+			return parseReleaseAssets(releases[0])
 		}
+
+		return null
 	} catch (error) {
 		console.error('Error fetching release:', error)
 		return null
