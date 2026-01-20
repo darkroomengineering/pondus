@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card, Stat, Table, Badge, Button, Select } from '@specto/ui'
 import { toast } from 'sonner'
+import { save } from '@tauri-apps/plugin-dialog'
+import { writeTextFile } from '@tauri-apps/plugin-fs'
+import { open } from '@tauri-apps/plugin-shell'
 import { useGitHubStore, type Timeframe, type MetricType } from '../stores/github'
 import { useProFeature, exportData } from '../stores/license'
 import { Spinner } from '../components/spinner'
@@ -79,16 +82,37 @@ export function Organization() {
 		setIsExporting(false)
 
 		if (result.success && result.blob) {
-			// Download the file
-			const url = URL.createObjectURL(result.blob)
-			const a = document.createElement('a')
-			a.href = url
-			a.download = result.filename || `specto-export.${format}`
-			document.body.appendChild(a)
-			a.click()
-			document.body.removeChild(a)
-			URL.revokeObjectURL(url)
-			toast.success('Export downloaded successfully')
+			// Show save dialog
+			const defaultFilename = result.filename || `specto-${orgName}-export.${format}`
+			const filePath = await save({
+				defaultPath: defaultFilename,
+				filters: format === 'csv'
+					? [{ name: 'CSV', extensions: ['csv'] }]
+					: [{ name: 'JSON', extensions: ['json'] }],
+			})
+
+			if (filePath) {
+				// Write the file
+				const content = await result.blob.text()
+				await writeTextFile(filePath, content)
+
+				// Get the folder path for "Show in Finder"
+				const folderPath = filePath.substring(0, filePath.lastIndexOf('/'))
+
+				toast.success(
+					<div className="flex flex-col gap-2">
+						<span>Export saved successfully</span>
+						<span className="text-xs opacity-80 truncate max-w-[250px]">{filePath}</span>
+						<button
+							onClick={() => open(folderPath)}
+							className="text-xs underline text-left hover:opacity-80"
+						>
+							Show in Finder
+						</button>
+					</div>,
+					{ duration: 5000 }
+				)
+			}
 		} else {
 			toast.error(result.error || 'Export failed')
 		}

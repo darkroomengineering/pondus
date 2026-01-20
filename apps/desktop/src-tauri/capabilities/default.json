@@ -9,6 +9,8 @@
     "updater:default",
     "process:allow-restart",
     "process:allow-exit",
+    "dialog:allow-save",
+    "fs:allow-write-text-file",
     {
       "identifier": "shell:allow-execute",
       "allow": [
