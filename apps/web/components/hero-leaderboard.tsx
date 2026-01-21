@@ -99,9 +99,13 @@ export function HeroLeaderboard({ initialData, initialCategory = 'developer-favo
 	}))
 
 	return (
-		<div className="relative max-w-2xl mx-auto">
+		<div
+			className="relative max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200"
+			role="region"
+			aria-label="Organization leaderboard"
+		>
 			{/* Glow effect behind */}
-			<div className="absolute -inset-4 bg-gradient-to-r from-[var(--accent)]/20 via-transparent to-[var(--accent)]/20 rounded-3xl blur-2xl opacity-50" />
+			<div className="absolute -inset-4 bg-gradient-to-r from-[var(--accent)]/20 via-transparent to-[var(--accent)]/20 rounded-3xl blur-2xl opacity-50" aria-hidden="true" />
 
 			<div className="relative rounded-2xl border border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-sm shadow-2xl overflow-hidden">
 				{/* Header with Category Selector */}
@@ -114,7 +118,8 @@ export function HeroLeaderboard({ initialData, initialCategory = 'developer-favo
 							<select
 								value={category}
 								onChange={(e) => setCategory(e.target.value as LeaderboardCategory)}
-								className="appearance-none font-semibold text-sm sm:text-base bg-transparent border-none cursor-pointer pr-6 focus:outline-none hover:text-[var(--accent)] transition-colors"
+								aria-label="Select leaderboard category"
+								className="appearance-none font-semibold text-sm sm:text-base bg-transparent border-none cursor-pointer pr-6 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 hover:text-[var(--accent)] transition-colors rounded"
 							>
 								{LEADERBOARD_CATEGORIES.map((cat) => (
 									<option key={cat.value} value={cat.value} className="bg-[var(--card)] text-[var(--foreground)]">
@@ -138,7 +143,13 @@ export function HeroLeaderboard({ initialData, initialCategory = 'developer-favo
 				</div>
 
 				{/* Leaderboard entries */}
-				<div className="divide-y divide-[var(--border)]">
+				<div
+					className="divide-y divide-[var(--border)]"
+					role="list"
+					aria-label="Top organizations"
+					aria-live="polite"
+					aria-busy={isLoading}
+				>
 					{isLoading ? (
 						// Loading skeleton
 						[1, 2, 3].map((i) => (
@@ -162,25 +173,28 @@ export function HeroLeaderboard({ initialData, initialCategory = 'developer-favo
 								href={`https://github.com/${org.name}`}
 								target="_blank"
 								rel="noopener noreferrer"
-								className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 transition-colors hover:bg-[var(--card-hover)] cursor-pointer ${
+								role="listitem"
+								aria-label={`Rank ${org.rank}: ${org.name} with ${org.repos} repositories, ${org.stars} stars, and activity score of ${org.score} out of 100`}
+								className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 sm:py-5 transition-all duration-200 hover:bg-[var(--card-hover)] hover:translate-x-1 cursor-pointer ${
 									index === 0 ? 'bg-gradient-to-r from-yellow-500/5 to-transparent' : ''
-								}`}
+								} animate-in fade-in slide-in-from-bottom-2`}
+								style={{ animationDelay: `${index * 80}ms` }}
 							>
 								<RankBadge rank={org.rank} />
 								<img
 									src={`${org.avatarUrl}?s=80`}
-									alt={org.name}
+									alt={`${org.name} logo`}
 									className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 border-[var(--border)]"
 								/>
 								<div className="flex-1 min-w-0">
 									<p className="font-semibold text-sm sm:text-base truncate">{org.name}</p>
-									<div className="flex items-center gap-3 text-xs text-[var(--muted)]">
+									<div className="flex items-center gap-3 text-xs text-[var(--muted)]" aria-hidden="true">
 										<span>{org.repos} repos</span>
 										<span className="hidden sm:inline">·</span>
 										<span className="hidden sm:inline">{org.stars} stars</span>
 									</div>
 								</div>
-								<div className="text-right" title="Quality score based on stars-per-repo and followers">
+								<div className="text-right" aria-hidden="true">
 									<p className="text-lg sm:text-xl font-bold text-[var(--accent)]">{org.score}<span className="text-xs font-normal text-[var(--muted)] ml-0.5">/100</span></p>
 									<p className="text-xs text-[var(--muted)]">activity</p>
 								</div>

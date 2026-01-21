@@ -1,4 +1,7 @@
+'use client'
+
 import type { HTMLAttributes, ReactNode, ThHTMLAttributes, TdHTMLAttributes } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '../../utils/cn'
 
 export interface TableProps extends HTMLAttributes<HTMLTableElement> {
@@ -6,7 +9,7 @@ export interface TableProps extends HTMLAttributes<HTMLTableElement> {
 }
 
 /**
- * Table component for data display
+ * Table component for data display with optional row animations
  *
  * @example
  * ```tsx
@@ -17,8 +20,8 @@ export interface TableProps extends HTMLAttributes<HTMLTableElement> {
  *       <Table.Head>Count</Table.Head>
  *     </Table.Row>
  *   </Table.Header>
- *   <Table.Body>
- *     <Table.Row>
+ *   <Table.Body animated>
+ *     <Table.Row animated>
  *       <Table.Cell>Item</Table.Cell>
  *       <Table.Cell>123</Table.Cell>
  *     </Table.Row>
@@ -47,7 +50,21 @@ function TableHeader({ className, children, ...props }: HTMLAttributes<HTMLTable
 	)
 }
 
-function TableBody({ className, children, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
+interface TableBodyProps extends HTMLAttributes<HTMLTableSectionElement> {
+	animated?: boolean
+}
+
+function TableBody({ className, children, animated = false, ...props }: TableBodyProps) {
+	if (animated) {
+		return (
+			<tbody className={cn('[&_tr:last-child]:border-0', className)} {...props}>
+				<AnimatePresence mode="popLayout">
+					{children}
+				</AnimatePresence>
+			</tbody>
+		)
+	}
+
 	return (
 		<tbody className={cn('[&_tr:last-child]:border-0', className)} {...props}>
 			{children}
@@ -55,15 +72,38 @@ function TableBody({ className, children, ...props }: HTMLAttributes<HTMLTableSe
 	)
 }
 
-function TableRow({ className, children, ...props }: HTMLAttributes<HTMLTableRowElement>) {
+interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
+	children: ReactNode
+	animated?: boolean
+	isLoading?: boolean
+}
+
+function TableRow({ className, children, animated = false, isLoading = false, ...props }: TableRowProps) {
+	const baseClassName = cn(
+		'border-b border-[var(--border)]',
+		'transition-all duration-[var(--duration-fast)]',
+		'hover:bg-[var(--card-hover)]',
+		isLoading && 'opacity-50',
+		className
+	)
+
+	if (animated) {
+		return (
+			<motion.tr
+				className={baseClassName}
+				initial={{ opacity: 0, y: 10 }}
+				animate={{ opacity: 1, y: 0 }}
+				exit={{ opacity: 0, y: -10 }}
+				transition={{ duration: 0.15 }}
+				layout
+			>
+				{children}
+			</motion.tr>
+		)
+	}
+
 	return (
-		<tr
-			className={cn(
-				'border-b border-[var(--border)] transition-colors hover:bg-[var(--card-hover)]',
-				className
-			)}
-			{...props}
-		>
+		<tr className={baseClassName} {...props}>
 			{children}
 		</tr>
 	)
@@ -83,10 +123,19 @@ function TableHead({ className, children, ...props }: ThHTMLAttributes<HTMLTable
 	)
 }
 
-function TableCell({ className, children, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
+interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
+	isLoading?: boolean
+}
+
+function TableCell({ className, children, isLoading = false, ...props }: TableCellProps) {
 	return (
 		<td
-			className={cn('px-4 py-3 align-middle text-[var(--foreground)]', className)}
+			className={cn(
+				'px-4 py-3 align-middle text-[var(--foreground)]',
+				'transition-opacity duration-[var(--duration-fast)]',
+				isLoading && 'opacity-50',
+				className
+			)}
 			{...props}
 		>
 			{children}

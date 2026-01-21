@@ -1,6 +1,7 @@
-import { Card, Stat } from '@specto/ui'
+import { Card, Stat, staggerContainer, staggerItem } from '@specto/ui'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { useAuthStore } from '../stores/auth'
 import { useProFeature, FREE_LIMITS } from '../stores/license'
 import { Spinner } from '../components/spinner'
@@ -16,8 +17,9 @@ interface UserStats {
 }
 
 export function Dashboard() {
-	const [userStats, setUserStats] = useState<UserStats | null>(null)
-	const [isLoading, setIsLoading] = useState(true)
+	// Use lazy initialization to avoid unnecessary computation on re-renders
+	const [userStats, setUserStats] = useState<UserStats | null>(() => null)
+	const [isLoading, setIsLoading] = useState(() => true)
 	const navigate = useNavigate()
 	const { username, getToken } = useAuthStore()
 	const { isPro } = useProFeature()
@@ -113,114 +115,162 @@ export function Dashboard() {
 	}, [username, getToken])
 
 	return (
-		<div className="h-full flex flex-col p-8 overflow-auto">
+		<div className="h-full flex flex-col p-8 overflow-auto" role="region" aria-label="Dashboard">
 			{/* Header */}
-			<div className="mb-8">
+			<motion.div
+				className="mb-8"
+				initial={{ opacity: 0, y: -10 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.3 }}
+			>
 				<h1 className="text-2xl font-semibold text-[var(--foreground)]">
 					Welcome back, <span className="text-[var(--accent)]">{username}</span>
 				</h1>
 				<p className="text-sm text-[var(--muted)] mt-2">
 					Your GitHub activity at a glance
 				</p>
-			</div>
+			</motion.div>
 
 			{/* User stats */}
-			<div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-				<Stat
-					label="Repositories"
-					value={isLoading ? <Spinner size="sm" /> : userStats?.publicRepos ?? '—'}
-					description="Public repos"
-				/>
-				<Stat
-					label="Total Stars"
-					value={isLoading ? <Spinner size="sm" /> : userStats?.totalStars ?? '—'}
-					description="Across all repos"
-				/>
-				<Stat
-					label="Commits"
-					value={isLoading ? <Spinner size="sm" /> : userStats?.recentCommits ?? '—'}
-					description="Last 30 days"
-				/>
-				<Stat
-					label="Pull Requests"
-					value={isLoading ? <Spinner size="sm" /> : userStats?.recentPRs ?? '—'}
-					description="Last 30 days"
-				/>
-			</div>
+			<motion.div
+				className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
+				variants={staggerContainer}
+				initial="initial"
+				animate="animate"
+				role="region"
+				aria-label="Your statistics"
+				aria-live="polite"
+			>
+				<motion.div variants={staggerItem}>
+					<Stat
+						label="Repositories"
+						value={isLoading ? <Spinner size="sm" /> : userStats?.publicRepos ?? '—'}
+						description="Public repos"
+					/>
+				</motion.div>
+				<motion.div variants={staggerItem}>
+					<Stat
+						label="Total Stars"
+						value={isLoading ? <Spinner size="sm" /> : userStats?.totalStars ?? '—'}
+						description="Across all repos"
+					/>
+				</motion.div>
+				<motion.div variants={staggerItem}>
+					<Stat
+						label="Commits"
+						value={isLoading ? <Spinner size="sm" /> : userStats?.recentCommits ?? '—'}
+						description="Last 30 days"
+					/>
+				</motion.div>
+				<motion.div variants={staggerItem}>
+					<Stat
+						label="Pull Requests"
+						value={isLoading ? <Spinner size="sm" /> : userStats?.recentPRs ?? '—'}
+						description="Last 30 days"
+					/>
+				</motion.div>
+			</motion.div>
 
 			{/* Organizations */}
 			{userStats && userStats.orgs.length > 0 && (
-				<Card className="mb-8">
-					<Card.Header>
-						<div className="flex items-center justify-between">
-							<h2 className="text-lg font-medium">Your Organizations</h2>
-							<span className="text-xs text-[var(--muted)]">
-								{isPro ? (
-									<span className="text-[var(--accent)]">Unlimited</span>
-								) : (
-									<>
-										<span className={userStats.orgs.length >= FREE_LIMITS.maxOrganizations ? 'text-[var(--color-warning)]' : ''}>
-											{userStats.orgs.length}
-										</span>
-										<span> / {FREE_LIMITS.maxOrganizations}</span>
-										{userStats.orgs.length >= FREE_LIMITS.maxOrganizations && (
-											<button
-												onClick={() => navigate('/settings')}
-												className="ml-2 text-[var(--accent)] hover:underline"
-											>
-												Upgrade
-											</button>
-										)}
-									</>
-								)}
-							</span>
-						</div>
-					</Card.Header>
-					<Card.Content>
-						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-							{userStats.orgs.map((org) => (
-								<button
-									key={org.login}
-									onClick={() => navigate(`/org/${org.login}`)}
-									className="flex flex-col items-center gap-3 p-5 rounded-lg bg-[var(--background)] border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--card-hover)] transition-all text-center group"
-								>
-									<img
-										src={org.avatar_url}
-										alt={org.login}
-										className="w-12 h-12 rounded-lg group-hover:scale-105 transition-transform"
-									/>
-									<span className="text-sm font-medium truncate w-full">{org.login}</span>
-								</button>
-							))}
-						</div>
-					</Card.Content>
-				</Card>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.3, delay: 0.2 }}
+				>
+					<Card className="mb-8">
+						<Card.Header>
+							<div className="flex items-center justify-between">
+								<h2 className="text-lg font-medium">Your Organizations</h2>
+								<span className="text-xs text-[var(--muted)]">
+									{isPro ? (
+										<span className="text-[var(--accent)]">Unlimited</span>
+									) : (
+										<>
+											<span className={userStats.orgs.length >= FREE_LIMITS.maxOrganizations ? 'text-[var(--color-warning)]' : ''}>
+												{userStats.orgs.length}
+											</span>
+											<span> / {FREE_LIMITS.maxOrganizations}</span>
+											{userStats.orgs.length >= FREE_LIMITS.maxOrganizations && (
+												<button
+													onClick={() => navigate('/settings')}
+													className="ml-2 text-[var(--accent)] hover:underline"
+												>
+													Upgrade
+												</button>
+											)}
+										</>
+									)}
+								</span>
+							</div>
+						</Card.Header>
+						<Card.Content>
+							<motion.div
+								className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+								variants={staggerContainer}
+								initial="initial"
+								animate="animate"
+							>
+								{userStats.orgs.map((org, index) => (
+									<motion.button
+										key={org.login}
+										onClick={() => navigate(`/org/${org.login}`)}
+										aria-label={`View ${org.login} organization`}
+										className="flex flex-col items-center gap-3 p-5 rounded-lg bg-[var(--background)] border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--card-hover)] transition-all text-center group focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
+										variants={staggerItem}
+										whileHover={{ y: -2, transition: { duration: 0.15 } }}
+									>
+										<img
+											src={org.avatar_url}
+											alt={`${org.login} logo`}
+											loading="lazy"
+											className="w-12 h-12 rounded-lg group-hover:scale-105 transition-transform"
+										/>
+										<span className="text-sm font-medium truncate w-full">{org.login}</span>
+									</motion.button>
+								))}
+							</motion.div>
+						</Card.Content>
+					</Card>
+				</motion.div>
 			)}
 
 			{/* Empty state for users without orgs */}
 			{userStats && userStats.orgs.length === 0 && (
-				<Card className="flex-1">
-					<Card.Content className="flex flex-col items-center justify-center h-full py-12 text-center">
-						<div className="w-12 h-12 rounded-full bg-[var(--card-hover)] flex items-center justify-center mb-4">
-							<svg className="w-6 h-6 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-							</svg>
-						</div>
-						<h3 className="text-sm font-medium mb-1">No organizations yet</h3>
-						<p className="text-xs text-[var(--muted)] max-w-xs">
-							Search for any GitHub organization using the search bar above to explore their metrics.
-						</p>
-					</Card.Content>
-				</Card>
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 0.3, delay: 0.2 }}
+				>
+					<Card className="flex-1">
+						<Card.Content className="flex flex-col items-center justify-center h-full py-12 text-center">
+							<div className="w-12 h-12 rounded-full bg-[var(--card-hover)] flex items-center justify-center mb-4">
+								<svg className="w-6 h-6 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+								</svg>
+							</div>
+							<h3 className="text-sm font-medium mb-1">No organizations yet</h3>
+							<p className="text-xs text-[var(--muted)] max-w-xs">
+								Search for any GitHub organization using the search bar above to explore their metrics.
+							</p>
+						</Card.Content>
+					</Card>
+				</motion.div>
 			)}
 
 			{/* Loading state */}
 			{isLoading && (
-				<Card className="flex-1">
-					<Card.Content className="flex items-center justify-center h-full">
-						<Spinner size="lg" />
-					</Card.Content>
-				</Card>
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 0.2 }}
+				>
+					<Card className="flex-1">
+						<Card.Content className="flex items-center justify-center h-full">
+							<Spinner size="lg" />
+						</Card.Content>
+					</Card>
+				</motion.div>
 			)}
 		</div>
 	)
