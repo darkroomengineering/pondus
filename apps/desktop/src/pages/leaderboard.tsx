@@ -72,7 +72,7 @@ function ActivityScoreHint() {
 				How is this calculated?
 			</button>
 			{isOpen && (
-				<div className="absolute top-full left-0 mt-2 p-4 rounded-lg border border-[var(--border)] bg-[var(--card)] shadow-xl z-50 w-72">
+				<div className="absolute top-full right-0 mt-2 p-4 rounded-lg border border-[var(--border)] bg-[var(--card)] shadow-xl z-50 w-72 max-w-[calc(100vw-2rem)]">
 					<h4 className="font-medium text-sm mb-2">Activity Score (0-100)</h4>
 					<p className="text-xs text-[var(--muted)] mb-3">
 						Measures quality over quantity using two metrics:
