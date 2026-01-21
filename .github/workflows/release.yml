@@ -102,6 +102,30 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R artifacts
 
+      - name: Rename artifacts to remove version
+        run: |
+          cd artifacts
+          # Rename DMG files
+          find . -name "*.dmg" | while read f; do
+            dir=$(dirname "$f")
+            newname=$(basename "$f" | sed 's/_[0-9]*\.[0-9]*\.[0-9]*_/_/')
+            mv "$f" "$dir/$newname"
+          done
+          # Rename MSI files
+          find . -name "*.msi" | while read f; do
+            dir=$(dirname "$f")
+            newname=$(basename "$f" | sed 's/_[0-9]*\.[0-9]*\.[0-9]*_/_/')
+            mv "$f" "$dir/$newname"
+          done
+          # Rename EXE files
+          find . -name "*.exe" | while read f; do
+            dir=$(dirname "$f")
+            newname=$(basename "$f" | sed 's/_[0-9]*\.[0-9]*\.[0-9]*_/_/')
+            mv "$f" "$dir/$newname"
+          done
+          echo "Renamed files:"
+          ls -R .
+
       - name: Get version
         id: version
         run: |
