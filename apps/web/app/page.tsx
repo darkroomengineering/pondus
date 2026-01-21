@@ -260,33 +260,60 @@ export default async function Home() {
 							{/* App content */}
 							<div className="flex min-h-[400px] sm:min-h-[500px]">
 								{/* Sidebar */}
-								<div className="hidden sm:flex w-48 border-r border-[var(--border)] bg-[var(--card)] flex-col">
-									<nav className="p-2 pt-3">
+								<div className="hidden sm:flex w-48 border-r border-[var(--border)] bg-[var(--card)] flex-col rounded-tr-xl">
+									{/* Search trigger */}
+									<div className="p-2 pt-3">
+										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)] border border-[var(--border)] hover:border-[var(--muted)] transition-colors">
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+											</svg>
+											<span className="flex-1">Search...</span>
+											<span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--background)] border border-[var(--border)]">⌘K</span>
+										</div>
+									</div>
+									{/* Main nav */}
+									<nav className="p-2">
 										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)] hover:bg-[var(--card-hover)] transition-colors">
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
 											</svg>
 											<span>Dashboard</span>
 										</div>
+										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)] hover:bg-[var(--card-hover)] transition-colors">
+											<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+												<path d="M12 1L9 9H2l6 5-2 8 6-5 6 5-2-8 6-5h-7l-3-8z" />
+											</svg>
+											<span>Leaderboard</span>
+										</div>
 									</nav>
+									{/* Recents */}
 									<div className="px-2 mt-1 flex-1">
 										<p className="px-3 py-1.5 text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider">Recents</p>
 										<div className="space-y-0.5">
-											{leaderboardData.slice(0, 3).map((org) => (
-												<div key={org.name} className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${org.name === 'vercel' ? 'bg-[var(--card-hover)] text-[var(--foreground)]' : 'text-[var(--muted)]'}`}>
+											{leaderboardData.slice(0, 4).map((org) => (
+												<div key={org.name} className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${org.name === 'vercel' ? 'bg-[var(--accent)] text-white' : 'text-[var(--muted)] hover:bg-[var(--card-hover)]'}`}>
 													<img src={`${org.avatarUrl}?s=32`} alt="" className="w-4 h-4 rounded" />
 													<span className="truncate">{org.name}</span>
 												</div>
 											))}
 										</div>
 									</div>
+									{/* Settings */}
 									<div className="p-2 border-t border-[var(--border)]">
-										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)]">
+										<div className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-[var(--muted)] hover:bg-[var(--card-hover)] transition-colors">
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
 											</svg>
 											<span>Settings</span>
+											<span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-[var(--accent)] text-white font-medium">PRO</span>
+										</div>
+									</div>
+									{/* User */}
+									<div className="p-2 pt-0">
+										<div className="flex items-center gap-2 px-3 py-2">
+											<div className="w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-xs font-medium">G</div>
+											<span className="text-sm text-[var(--foreground)]">guest</span>
 										</div>
 									</div>
 								</div>
@@ -296,7 +323,12 @@ export default async function Home() {
 									{/* Header */}
 									<div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
 										<div>
-											<p className="text-xs text-[var(--muted)] mb-1">← back</p>
+											<p className="text-xs text-[var(--muted)] mb-1 flex items-center gap-1">
+												<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+												</svg>
+												back
+											</p>
 											<h2 className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
 												vercel
 												<span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-500">Connected</span>
@@ -310,18 +342,24 @@ export default async function Home() {
 											<select className="px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] text-xs">
 												<option>Commits</option>
 											</select>
+											<button className="px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] text-xs flex items-center gap-1.5 hover:bg-[var(--card-hover)] transition-colors">
+												<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+												</svg>
+												Export
+											</button>
 										</div>
 									</div>
 
-									{/* Stats grid */}
+									{/* Primary stats grid */}
 									<div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
 										{[
+											{ label: 'Total Commits', value: '12.4k', desc: 'Last 30 days' },
+											{ label: 'Pull Requests', value: '892', desc: 'Merged PRs' },
+											{ label: 'Issues', value: '1.2k', desc: 'Closed issues' },
 											{ label: 'Repositories', value: formatNumber(leaderboardData[0]?.repos || 156), desc: 'Public repos' },
-											{ label: 'Stars', value: formatNumber(leaderboardData[0]?.stars || 450000), desc: 'Across all repos' },
-											{ label: 'Followers', value: formatNumber(leaderboardData[0]?.followers || 8900), desc: 'Org followers' },
-											{ label: 'Activity Score', value: leaderboardData[0]?.activityScore?.toString() || '95', desc: 'Relative score' },
 										].map((stat) => (
-											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--card-hover)] transition-colors">
 												<p className="text-xl sm:text-2xl font-bold text-[var(--accent)]">{stat.value}</p>
 												<p className="text-[10px] sm:text-xs font-medium">{stat.label}</p>
 												<p className="text-[9px] sm:text-[10px] text-[var(--muted)]">{stat.desc}</p>
@@ -334,10 +372,10 @@ export default async function Home() {
 										{[
 											{ label: 'Members', value: '89', desc: 'Organization members' },
 											{ label: 'Teams', value: '12', desc: 'Active teams' },
-											{ label: 'Contributors', value: '234', desc: 'Active contributors' },
-											{ label: 'Open Issues', value: '1.2k', desc: 'Across all repos' },
+											{ label: 'Contributors', value: '234', desc: 'Unique contributors' },
+											{ label: 'Avg Commits/Person', value: '53', desc: 'Per contributor' },
 										].map((stat) => (
-											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+											<div key={stat.label} className="p-3 sm:p-4 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--card-hover)] transition-colors">
 												<p className="text-xl sm:text-2xl font-bold text-[var(--accent)]">{stat.value}</p>
 												<p className="text-[10px] sm:text-xs font-medium">{stat.label}</p>
 												<p className="text-[9px] sm:text-[10px] text-[var(--muted)]">{stat.desc}</p>
