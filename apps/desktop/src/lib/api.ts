@@ -1,10 +1,9 @@
 // API client for fetching leaderboard data from the web API
 // This ensures consistency between web and desktop apps
 
-// Use localhost in development, production API in builds
-const API_BASE = import.meta.env.DEV
-	? 'http://localhost:3000'
-	: 'https://specto.darkroom.engineering'
+// Always use production API - it has CORS headers configured
+// and avoids the need to run the web server locally during development
+const API_BASE = 'https://specto.darkroom.engineering'
 
 export type LeaderboardCategory =
 	| 'developer-favorites'
@@ -30,8 +29,6 @@ export const LEADERBOARD_CATEGORIES = [
 ]
 
 export async function fetchLeaderboard(category: LeaderboardCategory = 'developer-favorites'): Promise<OrgStats[]> {
-	console.log(`[API] Fetching leaderboard for category: ${category}`)
-
 	try {
 		const res = await fetch(`${API_BASE}/api/leaderboard?category=${category}`, {
 			cache: 'no-store',
@@ -41,12 +38,10 @@ export async function fetchLeaderboard(category: LeaderboardCategory = 'develope
 		})
 
 		if (!res.ok) {
-			console.error(`[API] Failed to fetch: ${res.status} ${res.statusText}`)
 			throw new Error(`Failed to fetch leaderboard: ${res.statusText}`)
 		}
 
 		const json = await res.json()
-		console.log(`[API] Received ${json.data?.length || 0} orgs for ${category}`)
 		return json.data || []
 	} catch (error) {
 		console.error('[API] Fetch error:', error)
