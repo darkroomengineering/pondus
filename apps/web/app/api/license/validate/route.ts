@@ -19,7 +19,8 @@ interface LicenseResponse {
 // Allowed origins for CORS
 const ALLOWED_ORIGINS: string[] = [
 	'https://specto.darkroom.engineering',
-	'tauri://localhost',
+	'http://tauri.localhost', // Tauri 2.x production origin
+	'tauri://localhost', // Legacy Tauri origin
 	...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000', 'http://localhost:1420'] : []),
 ]
 
