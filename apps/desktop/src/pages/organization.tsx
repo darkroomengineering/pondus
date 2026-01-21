@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Stat, Table, Badge, Button, Select } from '@specto/ui'
+import { motion, AnimatePresence } from 'motion/react'
+import { Card, Stat, Table, Badge, Button, Select, ProGate, ProBadge } from '@specto/ui'
 import { toast } from 'sonner'
 import { save } from '@tauri-apps/plugin-dialog'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
@@ -8,6 +9,7 @@ import { open } from '@tauri-apps/plugin-shell'
 import { useGitHubStore, type Timeframe, type MetricType } from '../stores/github'
 import { useProFeature } from '../stores/license'
 import { Spinner } from '../components/spinner'
+import { OrganizationSkeleton } from '../components/skeletons/organization-skeleton'
 
 const metricOptions = [
 	{ value: 'commits', label: 'Commits' },
@@ -20,14 +22,6 @@ export function Organization() {
 	const [isExporting, setIsExporting] = useState(false)
 	const [showExportMenu, setShowExportMenu] = useState(false)
 
-	// Timeframe options with Pro gating
-	const timeframeOptions = [
-		{ value: '7d', label: 'Last 7 days' },
-		{ value: '30d', label: 'Last 30 days' },
-		{ value: '90d', label: isPro ? 'Last 90 days' : '🔒 Last 90 days', disabled: !isPro },
-		{ value: 'ytd', label: isPro ? 'Year to date' : '🔒 Year to date', disabled: !isPro },
-		{ value: 'all', label: isPro ? 'All time' : '🔒 All time', disabled: !isPro },
-	]
 	const { orgName } = useParams<{ orgName: string }>()
 	const navigate = useNavigate()
 	const {
@@ -39,11 +33,25 @@ export function Organization() {
 		suggestions,
 		timeframe,
 		metricType,
+		cacheAge,
+		isUsingCachedData,
 		setOrg,
 		setTimeframe,
 		setMetricType,
 		fetchAll,
 	} = useGitHubStore()
+
+	// Timeframe options with Pro gating (clean labels, disabled state handled by Select)
+	const timeframeOptions = [
+		{ value: '7d', label: 'Last 7 days' },
+		{ value: '30d', label: 'Last 30 days' },
+		{ value: '90d', label: 'Last 90 days', disabled: !isPro },
+		{ value: 'ytd', label: 'Year to date', disabled: !isPro },
+		{ value: 'all', label: 'All time', disabled: !isPro },
+	]
+
+	// Determine if primary data is still loading (for coordinated skeleton)
+	const isPrimaryLoading = isLoading.info && !orgData.info
 
 	useEffect(() => {
 		if (orgName && orgName !== currentOrg) {
@@ -248,12 +256,12 @@ export function Organization() {
 			const hasOther = otherCommits > 0
 
 			return (
-				<Table>
+				<Table aria-label="Top contributors by commits">
 					<Table.Header>
 						<Table.Row>
-							<Table.Head>Author</Table.Head>
-							<Table.Head className="text-right">Commits</Table.Head>
-							<Table.Head className="text-right">Share</Table.Head>
+							<Table.Head scope="col">Author</Table.Head>
+							<Table.Head scope="col" className="text-right">Commits</Table.Head>
+							<Table.Head scope="col" className="text-right">Share</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -291,12 +299,12 @@ export function Organization() {
 			const hasOther = otherPRs > 0
 
 			return (
-				<Table>
+				<Table aria-label="Top contributors by pull requests">
 					<Table.Header>
 						<Table.Row>
-							<Table.Head>Author</Table.Head>
-							<Table.Head className="text-right">PRs</Table.Head>
-							<Table.Head className="text-right">Merged</Table.Head>
+							<Table.Head scope="col">Author</Table.Head>
+							<Table.Head scope="col" className="text-right">PRs</Table.Head>
+							<Table.Head scope="col" className="text-right">Merged</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -333,12 +341,12 @@ export function Organization() {
 		const hasOther = otherIssues > 0
 
 		return (
-			<Table>
+			<Table aria-label="Top contributors by issues">
 				<Table.Header>
 					<Table.Row>
-						<Table.Head>Author</Table.Head>
-						<Table.Head className="text-right">Opened</Table.Head>
-						<Table.Head className="text-right">Closed</Table.Head>
+						<Table.Head scope="col">Author</Table.Head>
+						<Table.Head scope="col" className="text-right">Opened</Table.Head>
+						<Table.Head scope="col" className="text-right">Closed</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -369,8 +377,22 @@ export function Organization() {
 		)
 	}
 
+	const handleUpgrade = () => navigate('/settings')
+
 	return (
-		<div className="h-full flex flex-col p-8 overflow-auto">
+		<div className="h-full flex flex-col relative overflow-hidden" role="region" aria-label={`Organization: ${orgName}`}>
+			{/* Coordinated loading skeleton */}
+			<OrganizationSkeleton isVisible={isPrimaryLoading} />
+
+			{/* Main content with fade-in transition */}
+			<AnimatePresence>
+				{!isPrimaryLoading && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.3, ease: 'easeOut' }}
+						className="h-full flex flex-col p-8 overflow-auto"
+					>
 			{/* Header */}
 			<div className="mb-8 flex items-start justify-between">
 				<div>
@@ -393,53 +415,75 @@ export function Organization() {
 					{info?.description && (
 						<p className="text-sm text-[var(--muted)] mt-1">{info.description}</p>
 					)}
+					{isUsingCachedData && cacheAge && (
+						<p className="text-xs text-[var(--color-warning)] mt-1 flex items-center gap-1">
+							<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+							Showing cached data from {cacheAge}
+						</p>
+					)}
 				</div>
 				<div className="flex items-center gap-3">
-					<Select
-						value={timeframe}
-						onChange={(v) => setTimeframe(v as Timeframe)}
-						options={timeframeOptions}
-						size="sm"
-					/>
+					<div className="relative">
+						<Select
+							value={timeframe}
+							onChange={(v) => setTimeframe(v as Timeframe)}
+							options={timeframeOptions}
+							size="sm"
+						/>
+						{!isPro && (
+							<button
+								type="button"
+								onClick={handleUpgrade}
+								className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 rounded-full bg-[var(--accent)] text-white"
+								aria-label="Pro features available"
+							>
+								<svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+								</svg>
+							</button>
+						)}
+					</div>
 					<Select
 						value={metricType}
 						onChange={(v) => setMetricType(v as MetricType)}
 						options={metricOptions}
 						size="sm"
 					/>
-					<div className="relative">
-						<Button
-							variant="secondary"
-							size="sm"
-							onClick={() => canExport ? setShowExportMenu(!showExportMenu) : navigate('/settings')}
-							disabled={isExporting}
-						>
-							{isExporting ? (
-								<Spinner size="sm" />
-							) : (
-								<>
-									{!canExport && <span className="mr-1">🔒</span>}
-									Export
-								</>
+					<ProGate
+						isPro={canExport}
+						feature="data export"
+						onUpgrade={handleUpgrade}
+						mode="disable"
+					>
+						<div className="relative">
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => setShowExportMenu(!showExportMenu)}
+								disabled={isExporting}
+							>
+								{isExporting ? <Spinner size="sm" /> : 'Export'}
+							</Button>
+							{showExportMenu && (
+								<div className="absolute right-0 top-full mt-1 py-1 bg-[var(--card)] border border-[var(--border)] rounded-md shadow-lg z-10 min-w-[120px]">
+									<button
+										className="w-full px-3 py-1.5 text-sm text-left hover:bg-[var(--card-hover)] transition-colors"
+										onClick={() => handleExport('csv')}
+									>
+										Export CSV
+									</button>
+									<button
+										className="w-full px-3 py-1.5 text-sm text-left hover:bg-[var(--card-hover)] transition-colors"
+										onClick={() => handleExport('json')}
+									>
+										Export JSON
+									</button>
+								</div>
 							)}
-						</Button>
-						{showExportMenu && canExport && (
-							<div className="absolute right-0 top-full mt-1 py-1 bg-[var(--card)] border border-[var(--border)] rounded-md shadow-lg z-10 min-w-[120px]">
-								<button
-									className="w-full px-3 py-1.5 text-sm text-left hover:bg-[var(--card-hover)] transition-colors"
-									onClick={() => handleExport('csv')}
-								>
-									Export CSV
-								</button>
-								<button
-									className="w-full px-3 py-1.5 text-sm text-left hover:bg-[var(--card-hover)] transition-colors"
-									onClick={() => handleExport('json')}
-								>
-									Export JSON
-								</button>
-							</div>
-						)}
-					</div>
+						</div>
+					</ProGate>
 				</div>
 			</div>
 
@@ -474,6 +518,7 @@ export function Organization() {
 									<img
 										src={org.avatar_url}
 										alt={org.login}
+										loading="lazy"
 										className="w-10 h-10 rounded-lg"
 									/>
 									<div className="flex-1 min-w-0">
@@ -490,7 +535,12 @@ export function Organization() {
 			)}
 
 			{/* Stats grid */}
-			<div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+			<div
+				className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
+				role="region"
+				aria-label="Primary statistics"
+				aria-live="polite"
+			>
 				<Stat
 					label="Total Commits"
 					value={isLoading.commits ? '...' : totalCommits || '—'}
@@ -514,7 +564,11 @@ export function Organization() {
 			</div>
 
 			{/* Secondary stats */}
-			<div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+			<div
+				className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
+				role="region"
+				aria-label="Secondary statistics"
+			>
 				<Stat
 					label="Members"
 					value={isLoading.members ? '...' : members.length || '—'}
@@ -578,12 +632,12 @@ export function Organization() {
 								No teams found
 							</div>
 						) : (
-							<Table>
+							<Table aria-label="Organization teams">
 								<Table.Header>
 									<Table.Row>
-										<Table.Head>Team</Table.Head>
-										<Table.Head>Privacy</Table.Head>
-										<Table.Head className="text-right">Members</Table.Head>
+										<Table.Head scope="col">Team</Table.Head>
+										<Table.Head scope="col">Privacy</Table.Head>
+										<Table.Head scope="col" className="text-right">Members</Table.Head>
 									</Table.Row>
 								</Table.Header>
 								<Table.Body>
@@ -605,6 +659,9 @@ export function Organization() {
 				</Card>
 			</div>
 
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	)
 }
