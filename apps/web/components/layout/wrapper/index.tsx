@@ -56,7 +56,9 @@ export function Wrapper({ children, showHeader = true, showFooter = true }: Wrap
 	return (
 		<>
 			{showHeader && <Header />}
-			<main>{children}</main>
+			<main id="main-content" tabIndex={-1}>
+				{children}
+			</main>
 			{showFooter && <Footer />}
 		</>
 	)

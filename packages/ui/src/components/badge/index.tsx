@@ -1,9 +1,13 @@
+'use client'
+
 import type { HTMLAttributes, ReactNode } from 'react'
+import { motion } from 'motion/react'
 import { cn } from '../../utils/cn'
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 	variant?: 'default' | 'success' | 'warning' | 'error' | 'info'
 	children: ReactNode
+	animated?: boolean
 }
 
 const variantStyles = {
@@ -15,28 +19,42 @@ const variantStyles = {
 }
 
 /**
- * Badge component for status indicators
+ * Badge component for status indicators with optional enter animation
  *
  * @example
  * ```tsx
- * <Badge variant="success">Active</Badge>
+ * <Badge variant="success" animated>Active</Badge>
  * ```
  */
 export function Badge({
 	variant = 'default',
 	className,
 	children,
+	animated = false,
 	...props
 }: BadgeProps) {
+	const baseClassName = cn(
+		'inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border',
+		variantStyles[variant],
+		className
+	)
+
+	if (animated) {
+		return (
+			<motion.span
+				className={baseClassName}
+				initial={{ opacity: 0, scale: 0.9 }}
+				animate={{ opacity: 1, scale: 1 }}
+				exit={{ opacity: 0, scale: 0.9 }}
+				transition={{ type: 'spring', damping: 15, stiffness: 300 }}
+			>
+				{children}
+			</motion.span>
+		)
+	}
+
 	return (
-		<span
-			className={cn(
-				'inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border',
-				variantStyles[variant],
-				className
-			)}
-			{...props}
-		>
+		<span className={baseClassName} {...props}>
 			{children}
 		</span>
 	)

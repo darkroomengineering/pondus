@@ -7,7 +7,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Card container component
+ * Card container component with optional hover lift effect
  *
  * @example
  * ```tsx
@@ -23,7 +23,7 @@ export function Card({ className, children, hover = false, ...props }: CardProps
 			className={cn(
 				'rounded-lg border border-[var(--border)] bg-[var(--card)]',
 				'transition-all duration-[var(--duration-base)]',
-				hover && 'hover:bg-[var(--card-hover)] hover:border-[var(--muted)]',
+				hover && 'hover:bg-[var(--card-hover)] hover:border-[var(--muted)] hover:-translate-y-0.5',
 				className
 			)}
 			{...props}
